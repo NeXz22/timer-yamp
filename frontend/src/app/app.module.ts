@@ -6,6 +6,7 @@ import {AppComponent} from './app.component';
 import {HomeComponent} from './views/home/home.component';
 import {NotFoundComponent} from './views/not-found/not-found.component';
 import {SessionComponent} from './views/session/session.component';
+import {FormsModule} from '@angular/forms';
 
 @NgModule({
     declarations: [
@@ -16,7 +17,8 @@ import {SessionComponent} from './views/session/session.component';
     ],
     imports: [
         BrowserModule,
-        AppRoutingModule
+        AppRoutingModule,
+        FormsModule
     ],
     providers: [],
     bootstrap: [AppComponent]

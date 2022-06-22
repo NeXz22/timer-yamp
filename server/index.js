@@ -10,3 +10,10 @@ app.get('/', (req, res) => {
 server.listen(4444, () => {
     console.log('listening on *:4444');
 });
+
+function stopServer() {
+    server.unref();
+}
+
+module.exports = server
+module.exports.stopServer = stopServer;

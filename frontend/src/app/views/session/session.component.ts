@@ -29,8 +29,6 @@ export class SessionComponent implements OnInit {
             error: () => {
                 this.router.navigate(['']).then();
             },
-            complete: () => {
-            }
         });
 
         this.currentUrl = window.location.href;

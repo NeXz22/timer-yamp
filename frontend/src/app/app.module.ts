@@ -7,13 +7,15 @@ import {HomeComponent} from './views/home/home.component';
 import {NotFoundComponent} from './views/not-found/not-found.component';
 import {SessionComponent} from './views/session/session.component';
 import {FormsModule} from '@angular/forms';
+import {ParticipantListComponent} from './views/session/participant-list/participant-list.component';
 
 @NgModule({
     declarations: [
         AppComponent,
         HomeComponent,
         NotFoundComponent,
-        SessionComponent
+        SessionComponent,
+        ParticipantListComponent
     ],
     imports: [
         BrowserModule,

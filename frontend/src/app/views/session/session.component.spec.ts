@@ -4,6 +4,12 @@ import {SessionComponent} from './session.component';
 import {RouterTestingModule} from '@angular/router/testing';
 import {ActivatedRoute, Router} from '@angular/router';
 import {of, throwError} from 'rxjs';
+import {Component} from '@angular/core';
+
+
+@Component({selector: 'yamp-participant-list', template: ''})
+class ParticipantListStubComponent {
+}
 
 describe('SessionComponent', () => {
     let component: SessionComponent;
@@ -14,8 +20,13 @@ describe('SessionComponent', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            declarations: [SessionComponent],
-            imports: [RouterTestingModule],
+            declarations: [
+                SessionComponent,
+                ParticipantListStubComponent,
+            ],
+            imports: [
+                RouterTestingModule
+            ],
             providers: []
         })
             .compileComponents();

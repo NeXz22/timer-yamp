@@ -1,0 +1,11 @@
+<form (ngSubmit)="onNewParticipantSubmit()">
+    <label for="new-participant-input">Enter a new participant</label>
+    <input type="text" id="new-participant-input" #newParticipantInput>
+    <button type="submit" id="new-participant-button">Add</button>
+</form>
+
+<ul>
+    <li *ngFor="let participant of participants">
+        {{participant}}
+    </li>
+</ul>

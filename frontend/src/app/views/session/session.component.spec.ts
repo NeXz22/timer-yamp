@@ -15,7 +15,8 @@ describe('SessionComponent', () => {
     beforeEach(async () => {
         await TestBed.configureTestingModule({
             declarations: [SessionComponent],
-            imports: [RouterTestingModule]
+            imports: [RouterTestingModule],
+            providers: []
         })
             .compileComponents();
     });
@@ -56,5 +57,13 @@ describe('SessionComponent', () => {
         component.ngOnInit();
 
         expect(routerSpy).toHaveBeenCalled();
+    });
+
+    it('should show current url based on session name', () => {
+        const expectedUrl = window.location.href;
+
+        component.ngOnInit();
+
+        expect(component.currentUrl).toBe(expectedUrl);
     });
 });

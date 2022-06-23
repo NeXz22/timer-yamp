@@ -10,6 +10,7 @@ import {first} from 'rxjs';
 export class SessionComponent implements OnInit {
 
     sessionName: string = '';
+    currentUrl: string = '';
 
     constructor(
         private route: ActivatedRoute,
@@ -31,5 +32,7 @@ export class SessionComponent implements OnInit {
             complete: () => {
             }
         });
+
+        this.currentUrl = window.location.href;
     }
 }

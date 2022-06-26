@@ -1,0 +1,7 @@
+<form (ngSubmit)="onNewGoalSubmit()">
+    <label for="new-goal-input">Enter a new goal</label>
+    <input type="text" id="new-goal-input" #newGoalInput>
+    <button type="submit" id="new-goal-button">Add</button>
+</form>
+
+<yamp-drag-drop-list [items]="goals"></yamp-drag-drop-list>

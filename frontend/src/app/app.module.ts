@@ -10,6 +10,7 @@ import {FormsModule} from '@angular/forms';
 import {ParticipantListComponent} from './views/session/participant-list/participant-list.component';
 import {DragDropListComponent} from './views/session/drag-drop-list/drag-drop-list.component';
 import {DragDropModule} from '@angular/cdk/drag-drop';
+import {GoalListComponent} from './views/session/goal-list/goal-list.component';
 
 @NgModule({
     declarations: [
@@ -19,6 +20,7 @@ import {DragDropModule} from '@angular/cdk/drag-drop';
         SessionComponent,
         ParticipantListComponent,
         DragDropListComponent,
+        GoalListComponent,
     ],
     imports: [
         BrowserModule,

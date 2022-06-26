@@ -11,6 +11,10 @@ import {Component} from '@angular/core';
 class ParticipantListStubComponent {
 }
 
+@Component({selector: 'yamp-goal-list', template: ''})
+class GoalListStubComponent {
+}
+
 describe('SessionComponent', () => {
     let component: SessionComponent;
     let fixture: ComponentFixture<SessionComponent>;
@@ -23,6 +27,7 @@ describe('SessionComponent', () => {
             declarations: [
                 SessionComponent,
                 ParticipantListStubComponent,
+                GoalListStubComponent,
             ],
             imports: [
                 RouterTestingModule

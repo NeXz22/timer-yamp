@@ -8,6 +8,8 @@ import {NotFoundComponent} from './views/not-found/not-found.component';
 import {SessionComponent} from './views/session/session.component';
 import {FormsModule} from '@angular/forms';
 import {ParticipantListComponent} from './views/session/participant-list/participant-list.component';
+import {DragDropListComponent} from './views/session/drag-drop-list/drag-drop-list.component';
+import {DragDropModule} from '@angular/cdk/drag-drop';
 
 @NgModule({
     declarations: [
@@ -15,12 +17,14 @@ import {ParticipantListComponent} from './views/session/participant-list/partici
         HomeComponent,
         NotFoundComponent,
         SessionComponent,
-        ParticipantListComponent
+        ParticipantListComponent,
+        DragDropListComponent,
     ],
     imports: [
         BrowserModule,
         AppRoutingModule,
-        FormsModule
+        FormsModule,
+        DragDropModule
     ],
     providers: [],
     bootstrap: [AppComponent]

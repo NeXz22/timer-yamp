@@ -3,6 +3,12 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {ParticipantListComponent} from './participant-list.component';
 import {By} from '@angular/platform-browser';
 import {FormsModule} from '@angular/forms';
+import {Component, Input} from '@angular/core';
+
+@Component({selector: 'yamp-drag-drop-list', template: ''})
+class DragDropListStubComponent {
+    @Input() items: string[] = [];
+}
 
 describe('ParticipantListComponent', () => {
     let component: ParticipantListComponent;
@@ -12,8 +18,13 @@ describe('ParticipantListComponent', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            declarations: [ParticipantListComponent],
-            imports: [FormsModule]
+            declarations: [
+                ParticipantListComponent,
+                DragDropListStubComponent,
+            ],
+            imports: [
+                FormsModule
+            ]
         })
             .compileComponents();
     });

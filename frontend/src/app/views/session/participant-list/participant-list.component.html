@@ -4,8 +4,4 @@
     <button type="submit" id="new-participant-button">Add</button>
 </form>
 
-<ul>
-    <li *ngFor="let participant of participants">
-        {{participant}}
-    </li>
-</ul>
+<yamp-drag-drop-list [items]="participants"></yamp-drag-drop-list>

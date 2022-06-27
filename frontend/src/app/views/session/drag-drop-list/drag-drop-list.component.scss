@@ -1,3 +1,5 @@
+@use "src/assets/css/variables" as *;
+
 ul {
     overflow: hidden;
     border: 1px solid #ccc;
@@ -9,15 +11,15 @@ ul {
 li {
     padding: 1rem .5rem;
     border-bottom: solid 1px #ccc;
-    color: rgba(0, 0, 0, 0.87);
+    color: $main-color;
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
     box-sizing: border-box;
     cursor: move;
-    background: white;
     font-size: 14px;
+    user-select: none;
 }
 
 .cdk-drag-preview {

@@ -1,0 +1,10 @@
+@import "variables";
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    background-color: $main-background-color;
+    color: $main-color;
+}

@@ -7,7 +7,7 @@ import {AfterViewInit, Component, ElementRef, OnInit, ViewChild} from '@angular/
 })
 export class AppComponent implements OnInit, AfterViewInit {
 
-    @ViewChild('themeCheckbox') themeCheckboxRef!: ElementRef<HTMLInputElement>;
+    @ViewChild('themeCheckbox', {static: true}) themeCheckboxRef!: ElementRef<HTMLInputElement>;
 
     isDarkModePreference: boolean = false;
 

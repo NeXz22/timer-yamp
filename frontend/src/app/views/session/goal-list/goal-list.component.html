@@ -4,4 +4,8 @@
     <button type="submit" id="new-goal-button">Add</button>
 </form>
 
-<yamp-drag-drop-list [items]="goals"></yamp-drag-drop-list>
+<yamp-drag-drop-list [items]="goals">
+    <ng-template yampTemplate="item" let-goal>
+        <span>{{'custom-template ' + goal}}</span>
+    </ng-template>
+</yamp-drag-drop-list>

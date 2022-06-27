@@ -11,6 +11,7 @@ import {ParticipantListComponent} from './views/session/participant-list/partici
 import {DragDropListComponent} from './views/session/drag-drop-list/drag-drop-list.component';
 import {DragDropModule} from '@angular/cdk/drag-drop';
 import {GoalListComponent} from './views/session/goal-list/goal-list.component';
+import {YampTemplateDirective} from './views/session/shared/yamp-template.directive';
 
 @NgModule({
     declarations: [
@@ -21,6 +22,7 @@ import {GoalListComponent} from './views/session/goal-list/goal-list.component';
         ParticipantListComponent,
         DragDropListComponent,
         GoalListComponent,
+        YampTemplateDirective,
     ],
     imports: [
         BrowserModule,

@@ -1,5 +1,12 @@
 <ul cdkDropList (cdkDropListDropped)="onDrop($event)">
     <li *ngFor="let item of items" cdkDrag cdkDragBoundary="ul" cdkDragLockAxis="y">
-        {{item}}
+        <ng-container *ngIf="itemTemplate" [ngTemplateOutlet]="itemTemplate"
+                      [ngTemplateOutletContext]="{$implicit: item}"></ng-container>
+        <ng-container *ngIf="!itemTemplate" [ngTemplateOutlet]="defaultItemTemplate"
+                      [ngTemplateOutletContext]="{$implicit: item}"></ng-container>
     </li>
 </ul>
+
+<ng-template #defaultItemTemplate let-item>
+    <span>{{item}}</span>
+</ng-template>

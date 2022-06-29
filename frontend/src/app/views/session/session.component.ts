@@ -1,6 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {first} from 'rxjs';
+import {Session} from './shared/session';
 
 @Component({
     selector: 'yamp-session',
@@ -9,10 +10,11 @@ import {first} from 'rxjs';
 })
 export class SessionComponent implements OnInit {
 
-    sessionName: string = '';
+    sessionId: string = '';
     currentUrl: string = '';
     connectionStatus: boolean = false;
-    numberOfSocketsConnectedToSession: number = 0;
+    watching: number = 0;
+    session!: Session;
 
     constructor(
         private route: ActivatedRoute,
@@ -23,8 +25,8 @@ export class SessionComponent implements OnInit {
     ngOnInit(): void {
         this.route.queryParams.pipe(first()).subscribe({
             next: params => {
-                this.sessionName = params['id'];
-                if (!this.sessionName) {
+                this.sessionId = params['id'];
+                if (!this.sessionId) {
                     this.router.navigate(['']).then();
                 }
             },

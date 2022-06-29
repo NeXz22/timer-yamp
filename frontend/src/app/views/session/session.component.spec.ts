@@ -53,15 +53,15 @@ describe('SessionComponent', () => {
         expect(component).toBeTruthy();
     });
 
-    it('should retrieve session-name from activated route', () => {
-        expect(component.sessionName).toEqual('testSession');
+    it('should retrieve session-id from activated route', () => {
+        expect(component.sessionId).toEqual('testSession');
     });
 
-    it('should not navigate when sessionName is set', () => {
+    it('should not navigate when session-id is set', () => {
         expect(routerSpy).not.toHaveBeenCalled();
     });
 
-    it('should navigate when sessionName is not set', () => {
+    it('should navigate when session-id is not set', () => {
         route.queryParams = of({id: ''});
 
         component.ngOnInit();

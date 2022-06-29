@@ -1,7 +1,18 @@
-session-name: {{sessionName}}
+<p>
+    session-name: {{sessionName}}
+</p>
+
 <p>
     url: {{currentUrl}}
     <button id="copy-to-clipboard" [cdkCopyToClipboard]="currentUrl">Copy to Clipboard</button>
+</p>
+
+<p>
+    connection: {{connectionStatus}}
+</p>
+
+<p>
+    watching: {{numberOfSocketsConnectedToSession}}
 </p>
 
 <yamp-participant-list></yamp-participant-list>

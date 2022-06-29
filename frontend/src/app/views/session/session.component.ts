@@ -11,6 +11,8 @@ export class SessionComponent implements OnInit {
 
     sessionName: string = '';
     currentUrl: string = '';
+    connectionStatus: boolean = false;
+    numberOfSocketsConnectedToSession: number = 0;
 
     constructor(
         private route: ActivatedRoute,

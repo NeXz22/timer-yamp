@@ -5,6 +5,7 @@ import {RouterTestingModule} from '@angular/router/testing';
 import {ActivatedRoute, Router} from '@angular/router';
 import {of, throwError} from 'rxjs';
 import {Component} from '@angular/core';
+import {ClipboardModule} from '@angular/cdk/clipboard';
 
 
 @Component({selector: 'yamp-participant-list', template: ''})
@@ -30,7 +31,8 @@ describe('SessionComponent', () => {
                 GoalListStubComponent,
             ],
             imports: [
-                RouterTestingModule
+                RouterTestingModule,
+                ClipboardModule,
             ],
             providers: []
         })

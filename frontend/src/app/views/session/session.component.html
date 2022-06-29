@@ -1,6 +1,7 @@
 session-name: {{sessionName}}
 <p>
     url: {{currentUrl}}
+    <button id="copy-to-clipboard" [cdkCopyToClipboard]="currentUrl">Copy to Clipboard</button>
 </p>
 
 <yamp-participant-list></yamp-participant-list>

@@ -12,6 +12,7 @@ import {DragDropListComponent} from './views/session/drag-drop-list/drag-drop-li
 import {DragDropModule} from '@angular/cdk/drag-drop';
 import {GoalListComponent} from './views/session/goal-list/goal-list.component';
 import {YampTemplateDirective} from './views/session/shared/yamp-template.directive';
+import {ClipboardModule} from '@angular/cdk/clipboard';
 
 @NgModule({
     declarations: [
@@ -28,7 +29,8 @@ import {YampTemplateDirective} from './views/session/shared/yamp-template.direct
         BrowserModule,
         AppRoutingModule,
         FormsModule,
-        DragDropModule
+        DragDropModule,
+        ClipboardModule
     ],
     providers: [],
     bootstrap: [AppComponent]

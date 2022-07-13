@@ -1,4 +1,4 @@
-import {Component, ElementRef, ViewChild} from '@angular/core';
+import {Component, ElementRef, EventEmitter, Output, ViewChild} from '@angular/core';
 
 @Component({
     selector: 'yamp-participant-list',
@@ -9,11 +9,15 @@ export class ParticipantListComponent {
 
     @ViewChild('newParticipantInput', {static: true}) newParticipantInputRef!: ElementRef<HTMLInputElement>;
 
+    @Output() participantsChange: EventEmitter<string[]> = new EventEmitter<string[]>();
+
     participants: string[] = [];
 
-
     onNewParticipantSubmit(): void {
-        this.participants.push(this.newParticipantInputRef.nativeElement.value);
-        this.newParticipantInputRef.nativeElement.value = '';
+        if (this.newParticipantInputRef.nativeElement.value.trim()) {
+            this.participants.push(this.newParticipantInputRef.nativeElement.value.trim());
+            this.newParticipantInputRef.nativeElement.value = '';
+            this.participantsChange.emit(this.participants);
+        }
     }
 }

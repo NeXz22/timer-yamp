@@ -1,4 +1,4 @@
-import {Component, ElementRef, ViewChild} from '@angular/core';
+import {Component, ElementRef, EventEmitter, Output, ViewChild} from '@angular/core';
 
 @Component({
     selector: 'yamp-goal-list',
@@ -9,10 +9,15 @@ export class GoalListComponent {
 
     @ViewChild('newGoalInput', {static: true}) newGoalInputRef!: ElementRef<HTMLInputElement>;
 
+    @Output() goalsChange: EventEmitter<string[]> = new EventEmitter<string[]>();
+
     goals: string[] = [];
 
     onNewGoalSubmit(): void {
-        this.goals.push(this.newGoalInputRef.nativeElement.value);
-        this.newGoalInputRef.nativeElement.value = '';
+        if (this.newGoalInputRef.nativeElement.value.trim()) {
+            this.goals.push(this.newGoalInputRef.nativeElement.value.trim());
+            this.newGoalInputRef.nativeElement.value = '';
+            this.goalsChange.emit(this.goals);
+        }
     }
 }

@@ -15,6 +15,6 @@
     watching: {{watching}}
 </p>
 
-<yamp-participant-list></yamp-participant-list>
+<yamp-participant-list (participantsChange)="onParticipantsChanged($event)"></yamp-participant-list>
 
-<yamp-goal-list></yamp-goal-list>
+<yamp-goal-list (goalsChange)="onGoalsChanged($event)"></yamp-goal-list>

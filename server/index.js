@@ -68,6 +68,8 @@ function setupConnection() {
             log(message);
 
             sessionSettings.get(participantsChange.sessionId).participants = participantsChange.participants;
+
+            socket.broadcast.to(participantsChange.sessionId).emit('participants updated', participantsChange.participants);
         });
 
         socket.on('goals changed', (goalsChange) => {
@@ -76,6 +78,8 @@ function setupConnection() {
             log(message);
 
             sessionSettings.get(goalsChange.sessionId).goals = goalsChange.goals;
+
+            socket.broadcast.to(goalsChange.sessionId).emit('goals updated', goalsChange.goals);
         });
     });
 }

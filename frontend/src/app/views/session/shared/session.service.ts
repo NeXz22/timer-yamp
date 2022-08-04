@@ -50,6 +50,18 @@ export class SessionService {
             this.participantsSubject.next(this.sessionSettings.participants);
             this.goalsSubject.next(this.sessionSettings.goals);
         });
+
+        this.socket.on('participants updated', (participants) => {
+            this.sessionSettings.participants = participants;
+
+            this.participantsSubject.next(this.sessionSettings.participants);
+        });
+
+        this.socket.on('goals updated', (goals) => {
+            this.sessionSettings.goals = goals;
+
+            this.goalsSubject.next(this.sessionSettings.goals);
+        });
     }
 
     participantsChanged(participants: string[]): void {

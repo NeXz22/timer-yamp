@@ -20,6 +20,7 @@ li {
     cursor: move;
     font-size: 14px;
     user-select: none;
+    background-color: $main-background-color;
 }
 
 .cdk-drag-preview {

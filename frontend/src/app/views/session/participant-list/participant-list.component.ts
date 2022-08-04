@@ -1,23 +1,39 @@
-import {Component, ElementRef, EventEmitter, Output, ViewChild} from '@angular/core';
+import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {SessionService} from '../shared/session.service';
 
 @Component({
     selector: 'yamp-participant-list',
     templateUrl: './participant-list.component.html',
     styleUrls: ['./participant-list.component.scss']
 })
-export class ParticipantListComponent {
+export class ParticipantListComponent implements OnInit {
 
     @ViewChild('newParticipantInput', {static: true}) newParticipantInputRef!: ElementRef<HTMLInputElement>;
 
-    @Output() participantsChange: EventEmitter<string[]> = new EventEmitter<string[]>();
-
     participants: string[] = [];
+
+    constructor(
+        private sessionService: SessionService,
+    ) {
+    }
+
+    ngOnInit(): void {
+        this.sessionService.participantsSubject.subscribe({
+            next: newParticipants => {
+                this.participants = newParticipants;
+            },
+        })
+    }
 
     onNewParticipantSubmit(): void {
         if (this.newParticipantInputRef.nativeElement.value.trim()) {
             this.participants.push(this.newParticipantInputRef.nativeElement.value.trim());
             this.newParticipantInputRef.nativeElement.value = '';
-            this.participantsChange.emit(this.participants);
+            this.sessionService.participantsChanged(this.participants);
         }
+    }
+
+    onParticipantDrop(): void {
+        this.sessionService.participantsChanged(this.participants);
     }
 }

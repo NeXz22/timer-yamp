@@ -5,6 +5,11 @@ const socketIO = require('socket.io');
 
 let server;
 let io;
+let sessionSettings = new Map();
+const defaultSessionSettings = {
+    participants: [],
+    goals: [],
+};
 
 
 startServer(4444);
@@ -47,6 +52,30 @@ function setupConnection() {
             const message = `[${socket.id}] joined the session [${sessionToJoin}]`;
             io.in(sessionToJoin).emit('to all clients', message);
             log(message);
+
+            if (sessionSettings.has(sessionToJoin)) {
+                if (sessionSettings.get(sessionToJoin)) {
+                    socket.emit('settings for requested session already exist', sessionSettings.get(sessionToJoin))
+                }
+            } else {
+                sessionSettings.set(sessionToJoin, {...defaultSessionSettings});
+            }
+        });
+
+        socket.on('participants changed', (participantsChange) => {
+            const message = `[${socket.id}] emitted new participants: [${participantsChange.participants}]`;
+            io.in(participantsChange.sessionId).emit('to all clients', message);
+            log(message);
+
+            sessionSettings.get(participantsChange.sessionId).participants = participantsChange.participants;
+        });
+
+        socket.on('goals changed', (goalsChange) => {
+            const message = `[${socket.id}] emitted new goals: [${goalsChange.goals}]`;
+            io.in(goalsChange.sessionId).emit('to all clients', message);
+            log(message);
+
+            sessionSettings.get(goalsChange.sessionId).goals = goalsChange.goals;
         });
     });
 }

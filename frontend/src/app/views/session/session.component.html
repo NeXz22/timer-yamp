@@ -8,13 +8,13 @@
 </p>
 
 <p>
-    connection: {{connectionStatus}}
+    connection: {{sessionService.connectionStatus}}
 </p>
 
 <p>
     watching: {{watching}}
 </p>
 
-<yamp-participant-list (participantsChange)="onParticipantsChanged($event)"></yamp-participant-list>
+<yamp-participant-list></yamp-participant-list>
 
-<yamp-goal-list (goalsChange)="onGoalsChanged($event)"></yamp-goal-list>
+<yamp-goal-list></yamp-goal-list>

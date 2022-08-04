@@ -1,4 +1,4 @@
-import {AfterContentInit, Component, ContentChild, Input, TemplateRef} from '@angular/core';
+import {AfterContentInit, Component, ContentChild, EventEmitter, Input, Output, TemplateRef} from '@angular/core';
 import {CdkDragDrop, moveItemInArray} from '@angular/cdk/drag-drop';
 import {YampTemplateDirective} from '../shared/yamp-template.directive';
 
@@ -12,6 +12,8 @@ export class DragDropListComponent implements AfterContentInit {
     @ContentChild(YampTemplateDirective) templateDirective!: YampTemplateDirective;
 
     @Input() items: string[] = [];
+
+    @Output() dropEventEmitter = new EventEmitter<undefined>();
 
     itemTemplate: TemplateRef<any> | null = null;
 
@@ -27,5 +29,6 @@ export class DragDropListComponent implements AfterContentInit {
 
     onDrop(event: CdkDragDrop<string[]>): void {
         moveItemInArray(this.items, event.previousIndex, event.currentIndex);
+        this.dropEventEmitter.emit();
     }
 }

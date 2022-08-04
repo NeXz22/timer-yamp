@@ -4,4 +4,4 @@
     <button type="submit" id="new-participant-button">Add</button>
 </form>
 
-<yamp-drag-drop-list [items]="participants"></yamp-drag-drop-list>
+<yamp-drag-drop-list [items]="participants" (dropEventEmitter)="onParticipantDrop()"></yamp-drag-drop-list>

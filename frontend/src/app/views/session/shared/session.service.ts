@@ -15,6 +15,7 @@ export class SessionService {
         goals: [],
     }
 
+    watching: number = 0;
     connectionStatus: boolean = false;
     participantsSubject: Subject<string[]> = new Subject<string[]>();
     goalsSubject: Subject<string[]> = new Subject<string[]>();
@@ -41,6 +42,10 @@ export class SessionService {
 
         this.socket.on('to all clients', (message) => {
             SessionService.debugLog(`${message}`);
+        });
+
+        this.socket.on('watch changed', (watching) => {
+            this.watching = watching;
         });
 
         this.socket.on('settings for requested session already exist', (message) => {

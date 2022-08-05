@@ -43,6 +43,13 @@ function setupConnection() {
     io.on('connection', (socket) => {
         log(`[${socket.id}] connected. Number of currently connected sockets: ${io.engine.clientsCount}`);
 
+        socket.on('disconnecting', () => {
+            const sessionsToLeave = findSessionsToLeave(socket);
+            for (const session of sessionsToLeave) {
+                io.in(session).emit('watch changed', io.sockets.adapter.rooms.get(session).size - 1);
+            }
+        });
+
         socket.on('disconnect', (reason) => {
             log(`[${socket.id}] disconnected. Reason: ${reason}. Number of currently connected sockets: ${io.engine.clientsCount}`);
         });
@@ -51,6 +58,7 @@ function setupConnection() {
             socket.join(sessionToJoin);
             const message = `[${socket.id}] joined the session [${sessionToJoin}]`;
             io.in(sessionToJoin).emit('to all clients', message);
+            io.in(sessionToJoin).emit('watch changed', io.sockets.adapter.rooms.get(sessionToJoin).size);
             log(message);
 
             if (sessionSettings.has(sessionToJoin)) {
@@ -98,6 +106,13 @@ function logMultiple(messages) {
     }
 }
 
+function findSessionsToLeave(socket) {
+    const joinedSessions = socket.adapter.socketRooms(socket.id);
+    joinedSessions.delete(socket.id);
+    return [...joinedSessions];
+}
+
 
 module.exports = server
 module.exports.stopServer = stopServer;
+module.exports.findSessionsToLeave = findSessionsToLeave;

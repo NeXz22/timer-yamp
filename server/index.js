@@ -6,9 +6,13 @@ const socketIO = require('socket.io');
 let server;
 let io;
 let sessionSettings = new Map();
+
 const defaultSessionSettings = {
     participants: [],
     goals: [],
+    countdownRunning: false,
+    countdownLeft: 900000,
+    timeCountdownStarted: 0,
 };
 
 
@@ -63,7 +67,11 @@ function setupConnection() {
 
             if (sessionSettings.has(sessionToJoin)) {
                 if (sessionSettings.get(sessionToJoin)) {
-                    socket.emit('settings for requested session already exist', sessionSettings.get(sessionToJoin))
+                    const existingSessionSettings = {...sessionSettings.get(sessionToJoin)};
+                    if (sessionSettings.get(sessionToJoin).countdownRunning) {
+                        existingSessionSettings.countdownLeft -= Date.now() - existingSessionSettings.timeCountdownStarted;
+                    }
+                    socket.emit('settings for requested session already exist', existingSessionSettings)
                 }
             } else {
                 sessionSettings.set(sessionToJoin, {...defaultSessionSettings});
@@ -88,6 +96,26 @@ function setupConnection() {
             sessionSettings.get(goalsChange.sessionId).goals = goalsChange.goals;
 
             socket.broadcast.to(goalsChange.sessionId).emit('goals updated', goalsChange.goals);
+        });
+
+        socket.on('start stop countdown', (s) => {
+            sessionSettings.get(s.sessionId).countdownRunning = !sessionSettings.get(s.sessionId).countdownRunning;
+            sessionSettings.get(s.sessionId).countdownLeft = s.timeLeft;
+            if (sessionSettings.get(s.sessionId).countdownRunning) {
+                sessionSettings.get(s.sessionId).timeCountdownStarted = Date.now();
+            }
+            io.in(s.sessionId).emit('countdown update', {
+                countdownRunning: sessionSettings.get(s.sessionId).countdownRunning,
+                countdownLeft: sessionSettings.get(s.sessionId).countdownLeft
+            });
+        });
+
+        socket.on('reset countdown', (s) => {
+            sessionSettings.get(s.sessionId).countdownLeft = s.timeLeft;
+            io.in(s.sessionId).emit('countdown update', {
+                countdownRunning: sessionSettings.get(s.sessionId).countdownRunning,
+                countdownLeft: sessionSettings.get(s.sessionId).countdownLeft
+            });
         });
     });
 }

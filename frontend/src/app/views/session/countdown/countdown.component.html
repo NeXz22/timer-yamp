@@ -1,0 +1,5 @@
+<p>countdown: {{sessionService.timeLeft | countdown}}</p>
+<p>countdownRunning: {{sessionService.countdownRunning}}</p>
+
+<button type="button" (click)="onStartStopClicked()">Play/Stop</button>
+<button type="button" (click)="onResetClicked()" [disabled]="sessionService.countdownRunning">Reset</button>

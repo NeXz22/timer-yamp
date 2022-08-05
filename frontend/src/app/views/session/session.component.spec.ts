@@ -16,6 +16,10 @@ class ParticipantListStubComponent {
 class GoalListStubComponent {
 }
 
+@Component({selector: 'yamp-countdown', template: ''})
+class CountdownStubComponent {
+}
+
 describe('SessionComponent', () => {
     let component: SessionComponent;
     let fixture: ComponentFixture<SessionComponent>;
@@ -29,6 +33,7 @@ describe('SessionComponent', () => {
                 SessionComponent,
                 ParticipantListStubComponent,
                 GoalListStubComponent,
+                CountdownStubComponent,
             ],
             imports: [
                 RouterTestingModule,

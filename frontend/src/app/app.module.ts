@@ -13,6 +13,8 @@ import {DragDropModule} from '@angular/cdk/drag-drop';
 import {GoalListComponent} from './views/session/goal-list/goal-list.component';
 import {YampTemplateDirective} from './views/session/shared/yamp-template.directive';
 import {ClipboardModule} from '@angular/cdk/clipboard';
+import {CountdownComponent} from './views/session/countdown/countdown.component';
+import {CountdownPipe} from './views/session/shared/countdown.pipe';
 
 @NgModule({
     declarations: [
@@ -24,6 +26,8 @@ import {ClipboardModule} from '@angular/cdk/clipboard';
         DragDropListComponent,
         GoalListComponent,
         YampTemplateDirective,
+        CountdownComponent,
+        CountdownPipe,
     ],
     imports: [
         BrowserModule,

@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {Subject} from 'rxjs';
+import {Observable, Subject, Subscription, timer} from 'rxjs';
 import {io, Socket} from 'socket.io-client';
 import {LocalSession} from './localSession';
 
@@ -19,6 +19,12 @@ export class SessionService {
     connectionStatus: boolean = false;
     participantsSubject: Subject<string[]> = new Subject<string[]>();
     goalsSubject: Subject<string[]> = new Subject<string[]>();
+    countdownRunning: boolean = false;
+    timeLeft: number = 900000;
+    countdownDesiredTime: number = 900000;
+    private timerObservable: Observable<number> | null = null;
+    private timerSubscription: Subscription | null = null;
+    private timeAtLastTimerCall: number = 0;
 
     constructor() {
     }
@@ -54,6 +60,13 @@ export class SessionService {
 
             this.participantsSubject.next(this.sessionSettings.participants);
             this.goalsSubject.next(this.sessionSettings.goals);
+
+            this.countdownRunning = message.countdownRunning;
+            this.timeLeft = message.countdownLeft;
+
+            if (this.countdownRunning) {
+                this.startCountdown();
+            }
         });
 
         this.socket.on('participants updated', (participants) => {
@@ -67,6 +80,34 @@ export class SessionService {
 
             this.goalsSubject.next(this.sessionSettings.goals);
         });
+
+        this.socket.on('countdown update', (countdownUpdate) => {
+            this.timeLeft = countdownUpdate.countdownLeft;
+            this.countdownRunning = countdownUpdate.countdownRunning;
+
+            if (this.countdownRunning) {
+                this.startCountdown();
+            } else {
+                this.stopCountdown();
+            }
+        });
+    }
+
+    private startCountdown() {
+        this.timeAtLastTimerCall = Date.now();
+        this.timerObservable = timer(100, 500);
+        this.timerSubscription = this.timerObservable
+            .subscribe(() => {
+                if (this.timeAtLastTimerCall) {
+                    this.timeLeft -= Date.now() - this.timeAtLastTimerCall;
+                }
+                this.timeAtLastTimerCall = Date.now();
+            });
+    }
+
+    private stopCountdown() {
+        this.timerSubscription?.unsubscribe();
+        this.timerObservable = null;
     }
 
     participantsChanged(participants: string[]): void {
@@ -82,6 +123,20 @@ export class SessionService {
         this.socket?.emit('goals changed', {
             sessionId: this.sessionId,
             goals: this.sessionSettings.goals
+        });
+    }
+
+    startStopCountdown(): void {
+        this.socket?.emit('start stop countdown', {
+            sessionId: this.sessionId,
+            timeLeft: this.timeLeft,
+        });
+    }
+
+    resetCountdown() :void {
+        this.socket?.emit('reset countdown', {
+            sessionId: this.sessionId,
+            timeLeft: this.countdownDesiredTime,
         });
     }
 

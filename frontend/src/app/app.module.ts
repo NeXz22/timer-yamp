@@ -18,6 +18,8 @@ import {CountdownPipe} from './views/session/shared/countdown.pipe';
 import {TimeInputComponent} from './views/session/time-input/time-input.component';
 import {MillisecondsToMinutesPipe} from './views/session/shared/milliseconds-to-minutes.pipe';
 import {MillisecondsToSecondsPipe} from './views/session/shared/milliseconds-to-seconds.pipe';
+import {ConnectionLostDialogComponent} from './views/session/connection-lost-dialog/connection-lost-dialog.component';
+import {DialogModule} from '@angular/cdk/dialog';
 
 @NgModule({
     declarations: [
@@ -34,13 +36,15 @@ import {MillisecondsToSecondsPipe} from './views/session/shared/milliseconds-to-
         TimeInputComponent,
         MillisecondsToMinutesPipe,
         MillisecondsToSecondsPipe,
+        ConnectionLostDialogComponent,
     ],
     imports: [
         BrowserModule,
         AppRoutingModule,
         FormsModule,
         DragDropModule,
-        ClipboardModule
+        ClipboardModule,
+        DialogModule,
     ],
     providers: [],
     bootstrap: [AppComponent]

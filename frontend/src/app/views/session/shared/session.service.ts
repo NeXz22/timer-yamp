@@ -2,6 +2,8 @@ import {Injectable} from '@angular/core';
 import {Observable, Subject, Subscription, timer} from 'rxjs';
 import {io, Socket} from 'socket.io-client';
 import {LocalSession} from './localSession';
+import {ConnectionLostDialogComponent} from '../connection-lost-dialog/connection-lost-dialog.component';
+import {Dialog, DialogRef} from '@angular/cdk/dialog';
 
 @Injectable({
     providedIn: 'root'
@@ -29,7 +31,11 @@ export class SessionService {
     desiredSeconds: number = 0;
     desiredMinutes: number = 900000;
 
-    constructor() {
+    private dialogRef: DialogRef<unknown, ConnectionLostDialogComponent> | null = null;
+
+    constructor(
+        public dialog: Dialog,
+    ) {
     }
 
     connect(sessionId: string): void {
@@ -40,6 +46,8 @@ export class SessionService {
         this.socket.on('connect', () => {
             SessionService.debugLog(`Connected to Server. User-ID: [${this.socket?.id}]`);
             this.connectionStatus = true;
+            this.dialogRef?.close();
+            this.dialogRef = null;
 
             this.socket?.emit('join session', this.sessionId);
         });
@@ -47,6 +55,7 @@ export class SessionService {
         this.socket.on('disconnect', (reason) => {
             SessionService.debugLog(`Disconnected from Server. Reason: ${reason}`);
             this.connectionStatus = false;
+            this.dialogRef = this.dialog.open(ConnectionLostDialogComponent, {});
         });
 
         this.socket.on('to all clients', (message) => {

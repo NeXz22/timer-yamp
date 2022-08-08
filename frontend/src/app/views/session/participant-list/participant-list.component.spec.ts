@@ -4,6 +4,8 @@ import {ParticipantListComponent} from './participant-list.component';
 import {By} from '@angular/platform-browser';
 import {FormsModule} from '@angular/forms';
 import {Component, Input} from '@angular/core';
+import {SessionService} from '../shared/session.service';
+import {Subject} from 'rxjs';
 
 @Component({selector: 'yamp-drag-drop-list', template: ''})
 class DragDropListStubComponent {
@@ -13,10 +15,13 @@ class DragDropListStubComponent {
 describe('ParticipantListComponent', () => {
     let component: ParticipantListComponent;
     let fixture: ComponentFixture<ParticipantListComponent>;
+    let sessionServiceSpy: jasmine.SpyObj<SessionService>;
     let newParticipantInput: HTMLInputElement;
     let newParticipantButton: HTMLButtonElement;
 
     beforeEach(async () => {
+        const spy = jasmine.createSpyObj('SessionService', ['participantsChanged']);
+
         await TestBed.configureTestingModule({
             declarations: [
                 ParticipantListComponent,
@@ -24,6 +29,9 @@ describe('ParticipantListComponent', () => {
             ],
             imports: [
                 FormsModule
+            ],
+            providers: [
+                {provide: SessionService, useValue: spy},
             ]
         })
             .compileComponents();
@@ -32,6 +40,8 @@ describe('ParticipantListComponent', () => {
     beforeEach(() => {
         fixture = TestBed.createComponent(ParticipantListComponent);
         component = fixture.componentInstance;
+        sessionServiceSpy = TestBed.inject(SessionService) as jasmine.SpyObj<SessionService>;
+        sessionServiceSpy.participantsSubject = new Subject<string[]>();
         newParticipantInput = fixture.debugElement.query(By.css('#new-participant-input')).nativeElement;
         newParticipantButton = fixture.debugElement.query(By.css('#new-participant-button')).nativeElement;
         fixture.detectChanges();

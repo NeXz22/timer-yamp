@@ -13,7 +13,6 @@ export class SessionComponent implements OnInit {
     sessionId: string = '';
     currentUrl: string = '';
     connectionStatus: boolean = false;
-    watching: number = 0;
 
     constructor(
         private route: ActivatedRoute,

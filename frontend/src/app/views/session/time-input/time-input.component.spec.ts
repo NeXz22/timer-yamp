@@ -2,14 +2,22 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {TimeInputComponent} from './time-input.component';
 import {By} from '@angular/platform-browser';
+import {SessionService} from '../shared/session.service';
 
 describe('TimeInputComponent', () => {
     let component: TimeInputComponent;
     let fixture: ComponentFixture<TimeInputComponent>;
 
     beforeEach(async () => {
+        const spy = jasmine.createSpyObj('SessionService', ['timeSettingsChanged']);
+
         await TestBed.configureTestingModule({
-            declarations: [TimeInputComponent]
+            declarations: [
+                TimeInputComponent
+            ],
+            providers: [
+                {provide: SessionService, useValue: spy},
+            ]
         })
             .compileComponents();
 

@@ -6,6 +6,7 @@ import {ActivatedRoute, Router} from '@angular/router';
 import {of, throwError} from 'rxjs';
 import {Component, Input, Pipe} from '@angular/core';
 import {ClipboardModule} from '@angular/cdk/clipboard';
+import {SessionService} from './shared/session.service';
 
 
 @Component({selector: 'yamp-participant-list', template: ''})
@@ -47,6 +48,8 @@ describe('SessionComponent', () => {
     let route: ActivatedRoute;
 
     beforeEach(async () => {
+        const spy = jasmine.createSpyObj('SessionService', ['connect']);
+
         await TestBed.configureTestingModule({
             declarations: [
                 SessionComponent,
@@ -61,7 +64,9 @@ describe('SessionComponent', () => {
                 RouterTestingModule,
                 ClipboardModule,
             ],
-            providers: []
+            providers: [
+                {provide: SessionService, useValue: spy},
+            ]
         })
             .compileComponents();
     });

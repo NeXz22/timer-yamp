@@ -14,7 +14,7 @@ const defaultSessionSettings = {
     countdownLeft: 900000,
     timeCountdownStarted: 0,
     desiredSeconds: 0,
-    desiredMinutes: 15,
+    desiredMinutes: 900000,
 };
 
 

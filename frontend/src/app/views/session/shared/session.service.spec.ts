@@ -1,16 +1,23 @@
-import { TestBed } from '@angular/core/testing';
+import {TestBed} from '@angular/core/testing';
 
-import { SessionService } from './session.service';
+import {SessionService} from './session.service';
+import {Dialog} from '@angular/cdk/dialog';
 
 describe('SessionService', () => {
-  let service: SessionService;
+    let service: SessionService;
 
-  beforeEach(() => {
-    TestBed.configureTestingModule({});
-    service = TestBed.inject(SessionService);
-  });
+    beforeEach(() => {
+        const spy = jasmine.createSpyObj('Dialog', ['open', 'close']);
 
-  it('should be created', () => {
-    expect(service).toBeTruthy();
-  });
+        TestBed.configureTestingModule({
+            providers: [
+                {provide: Dialog, useValue: spy},
+            ],
+        });
+        service = TestBed.inject(SessionService);
+    });
+
+    it('should be created', () => {
+        expect(service).toBeTruthy();
+    });
 });

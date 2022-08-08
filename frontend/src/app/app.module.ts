@@ -15,6 +15,9 @@ import {YampTemplateDirective} from './views/session/shared/yamp-template.direct
 import {ClipboardModule} from '@angular/cdk/clipboard';
 import {CountdownComponent} from './views/session/countdown/countdown.component';
 import {CountdownPipe} from './views/session/shared/countdown.pipe';
+import {TimeInputComponent} from './views/session/time-input/time-input.component';
+import {MillisecondsToMinutesPipe} from './views/session/shared/milliseconds-to-minutes.pipe';
+import {MillisecondsToSecondsPipe} from './views/session/shared/milliseconds-to-seconds.pipe';
 
 @NgModule({
     declarations: [
@@ -28,6 +31,9 @@ import {CountdownPipe} from './views/session/shared/countdown.pipe';
         YampTemplateDirective,
         CountdownComponent,
         CountdownPipe,
+        TimeInputComponent,
+        MillisecondsToMinutesPipe,
+        MillisecondsToSecondsPipe,
     ],
     imports: [
         BrowserModule,

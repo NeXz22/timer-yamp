@@ -26,6 +26,9 @@ export class SessionService {
     private timerSubscription: Subscription | null = null;
     private timeAtLastTimerCall: number = 0;
 
+    desiredSeconds: number = 0;
+    desiredMinutes: number = 900000;
+
     constructor() {
     }
 
@@ -61,6 +64,11 @@ export class SessionService {
             this.participantsSubject.next(this.sessionSettings.participants);
             this.goalsSubject.next(this.sessionSettings.goals);
 
+            this.desiredSeconds = message.desiredSeconds;
+            this.desiredMinutes = message.desiredMinutes;
+
+            this.updateDesiredTime();
+
             this.countdownRunning = message.countdownRunning;
             this.timeLeft = message.countdownLeft;
 
@@ -90,6 +98,16 @@ export class SessionService {
             } else {
                 this.stopCountdown();
             }
+        });
+
+        this.socket.on('seconds changed', (goals) => {
+            this.desiredSeconds = goals.desiredSeconds;
+            this.updateDesiredTime();
+        });
+
+        this.socket.on('minutes changed', (goals) => {
+            this.desiredMinutes = goals.desiredMinutes;
+            this.updateDesiredTime();
         });
     }
 
@@ -133,14 +151,35 @@ export class SessionService {
         });
     }
 
-    resetCountdown() :void {
+    resetCountdown(): void {
         this.socket?.emit('reset countdown', {
             sessionId: this.sessionId,
             timeLeft: this.countdownDesiredTime,
         });
     }
 
+    timeSettingsChanged(value: number, type: string): void {
+        if (type === 'seconds') {
+            const newSeconds = value * 1000;
+            this.socket?.emit('time seconds settings changed', {
+                sessionId: this.sessionId,
+                desiredSeconds: newSeconds,
+            });
+        } else if (type === 'minutes') {
+            const newMinutes = value * 1000 * 60;
+            this.socket?.emit('time minutes settings changed', {
+                sessionId: this.sessionId,
+                desiredMinutes: newMinutes,
+            });
+        }
+    }
+
     static debugLog(message: string): void {
         console.debug(`${new Date().toISOString()}: ${message}.`);
+    }
+
+    private updateDesiredTime(): void {
+        this.countdownDesiredTime = this.desiredSeconds + this.desiredMinutes;
+        this.timeLeft = this.countdownDesiredTime;
     }
 }

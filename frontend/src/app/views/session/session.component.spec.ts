@@ -4,7 +4,7 @@ import {SessionComponent} from './session.component';
 import {RouterTestingModule} from '@angular/router/testing';
 import {ActivatedRoute, Router} from '@angular/router';
 import {of, throwError} from 'rxjs';
-import {Component} from '@angular/core';
+import {Component, Input, Pipe} from '@angular/core';
 import {ClipboardModule} from '@angular/cdk/clipboard';
 
 
@@ -18,6 +18,25 @@ class GoalListStubComponent {
 
 @Component({selector: 'yamp-countdown', template: ''})
 class CountdownStubComponent {
+}
+
+@Component({selector: 'yamp-time-input', template: ''})
+class TimeInputStubComponent {
+    @Input() value: number = 0;
+}
+
+@Pipe({name: 'millisecondsToMinutes'})
+class MillisecondsToMinutesStubPipe {
+    transform(value: number) {
+        return value;
+    }
+}
+
+@Pipe({name: 'millisecondsToSeconds'})
+class MillisecondsToSecondsStubPipe {
+    transform(value: number) {
+        return value;
+    }
 }
 
 describe('SessionComponent', () => {
@@ -34,6 +53,9 @@ describe('SessionComponent', () => {
                 ParticipantListStubComponent,
                 GoalListStubComponent,
                 CountdownStubComponent,
+                TimeInputStubComponent,
+                MillisecondsToMinutesStubPipe,
+                MillisecondsToSecondsStubPipe,
             ],
             imports: [
                 RouterTestingModule,

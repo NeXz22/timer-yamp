@@ -17,6 +17,18 @@
 
 <yamp-countdown></yamp-countdown>
 
+<h3>Settings</h3>
+<p>
+    minutes:
+    <yamp-time-input  type="minutes" [value]="sessionService.countdownDesiredTime | millisecondsToMinutes"></yamp-time-input>
+</p>
+
+<p>
+    seconds:
+    <yamp-time-input type="seconds" [value]="sessionService.countdownDesiredTime | millisecondsToSeconds"></yamp-time-input>
+</p>
+
+<h3>Lists</h3>
 <yamp-participant-list></yamp-participant-list>
 
 <yamp-goal-list></yamp-goal-list>

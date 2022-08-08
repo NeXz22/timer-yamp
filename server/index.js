@@ -13,6 +13,8 @@ const defaultSessionSettings = {
     countdownRunning: false,
     countdownLeft: 900000,
     timeCountdownStarted: 0,
+    desiredSeconds: 0,
+    desiredMinutes: 15,
 };
 
 
@@ -115,6 +117,20 @@ function setupConnection() {
             io.in(s.sessionId).emit('countdown update', {
                 countdownRunning: sessionSettings.get(s.sessionId).countdownRunning,
                 countdownLeft: sessionSettings.get(s.sessionId).countdownLeft
+            });
+        });
+
+        socket.on('time seconds settings changed', (s) => {
+            sessionSettings.get(s.sessionId).desiredSeconds = s.desiredSeconds;
+            io.in(s.sessionId).emit('seconds changed', {
+                desiredSeconds: s.desiredSeconds
+            });
+        });
+
+        socket.on('time minutes settings changed', (s) => {
+            sessionSettings.get(s.sessionId).desiredMinutes = s.desiredMinutes;
+            io.in(s.sessionId).emit('minutes changed', {
+                desiredMinutes: s.desiredMinutes
             });
         });
     });

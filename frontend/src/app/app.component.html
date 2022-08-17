@@ -1,5 +1,10 @@
-<label class="switch">
-    <input type="checkbox" (change)="onThemeSwitchChange()" #themeCheckbox>
-    <span class="slider"></span>
-</label>
-<router-outlet></router-outlet>
+<main>
+    <router-outlet></router-outlet>
+</main>
+
+<div id="theme-switch">
+    <label class="switch">
+        <input type="checkbox" (change)="onThemeSwitchChange()" #themeCheckbox>
+        <span class="slider"></span>
+    </label>
+</div>

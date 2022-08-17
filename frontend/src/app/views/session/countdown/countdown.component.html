@@ -1,5 +1,11 @@
-<p>countdown: {{sessionService.timeLeft | countdown}}</p>
-<p>countdownRunning: {{sessionService.countdownRunning}}</p>
+<div class="timer-container">
+    <div role="progressbar" aria-valuemin="0" aria-valuemax="100"
+         style="--value:{{360 * (sessionService.timeLeft / sessionService.countdownDesiredTime)}}">
+        <div class="time">{{sessionService.timeLeft | countdown}}</div>
+    </div>
+</div>
 
-<button type="button" (click)="onStartStopClicked()">Play/Stop</button>
-<button type="button" (click)="onResetClicked()" [disabled]="sessionService.countdownRunning">Reset</button>
+<div class="button-container">
+    <button type="button" (click)="onStartStopClicked()">{{sessionService.countdownRunning | timerStartStopButton}}</button>
+    <button type="button" (click)="onResetClicked()" [disabled]="sessionService.countdownRunning">Reset</button>
+</div>

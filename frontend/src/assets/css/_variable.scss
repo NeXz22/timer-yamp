@@ -1,0 +1,19 @@
+@use "themes/light-theme";
+@use "themes/dark-theme";
+
+/***********************************************************************************************************************
+General
+********************************************************************************************************************* */
+$main-color: var(--main-color);
+$main-background-color: var(--main-background-color);
+$main-content-background-color: var(--main-content-background-color);
+
+/***********************************************************************************************************************
+Buttons
+********************************************************************************************************************* */
+$main-button-color: #fff;
+$main-button-color-disabled: #6d7cff;
+$main-button-background-color: #6d7cff;
+$main-button-background-color-hover: #852D91;
+$main-button-background-color-active: #531d5b;
+$main-button-background-color-disabled: #37394c;

@@ -1,0 +1,20 @@
+@use "../variable" as *;
+
+input {
+    background-color: #4b4b4b;
+    color: white;
+    border: 1px solid #5d5d5d;
+    height: 40px;
+    border-radius: .5rem;
+    padding: 0 .5rem;
+    min-width: 100px;
+
+    &:disabled {
+        background-color: #2d2d2d;
+        color: #929292;
+    }
+
+    &[type="checkbox"] {
+        min-width: auto;
+    }
+}

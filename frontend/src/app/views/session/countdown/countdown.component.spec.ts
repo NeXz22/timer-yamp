@@ -1,8 +1,23 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {CountdownComponent} from './countdown.component';
-import {CountdownPipe} from '../shared/countdown.pipe';
 import {SessionService} from '../shared/session.service';
+import {Pipe} from '@angular/core';
+
+
+@Pipe({name: 'timerStartStopButton'})
+class TimerStartStopButtonStubPipe {
+    transform() {
+        return '';
+    }
+}
+
+@Pipe({name: 'countdown'})
+class CountdownStubPipe {
+    transform() {
+        return '';
+    }
+}
 
 describe('CountdownComponent', () => {
     let component: CountdownComponent;
@@ -14,7 +29,8 @@ describe('CountdownComponent', () => {
         await TestBed.configureTestingModule({
             declarations: [
                 CountdownComponent,
-                CountdownPipe,
+                CountdownStubPipe,
+                TimerStartStopButtonStubPipe,
             ],
             providers: [
                 {provide: SessionService, useValue: spy}

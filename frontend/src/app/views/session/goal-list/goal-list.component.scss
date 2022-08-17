@@ -1,0 +1,29 @@
+@use "src/assets/css/mixin" as *;
+
+form {
+    display: flex;
+
+    input {
+        flex: 0 1 100%;
+    }
+
+    button {
+        flex: 0 0 auto;
+        margin: 0 0 0 1rem;
+    }
+}
+
+
+@include screen-s {
+    form {
+        flex-direction: column;
+
+        input {
+            flex: 0 0 auto;
+        }
+
+        button {
+            margin: 0;
+        }
+    }
+}

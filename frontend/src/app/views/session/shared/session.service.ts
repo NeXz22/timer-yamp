@@ -122,7 +122,7 @@ export class SessionService {
 
     private startCountdown() {
         this.timeAtLastTimerCall = Date.now();
-        this.timerObservable = timer(100, 500);
+        this.timerObservable = timer(100, 200);
         this.timerSubscription = this.timerObservable
             .subscribe(() => {
                 if (this.timeAtLastTimerCall) {

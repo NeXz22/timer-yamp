@@ -1,0 +1,34 @@
+@use "../variable" as *;
+
+button {
+    color: $main-button-color;
+    background-color: $main-button-background-color;
+    padding: .75rem 1.25rem;
+    letter-spacing: 1px;
+    font-size: .9rem;
+    box-shadow: 0 4px 15px 0 rgba(126, 52, 161, 0.25);
+    cursor: pointer;
+    transition: all .2s ease-in-out;
+    height: 40px;
+    border: 1px solid $main-button-background-color;
+    border-radius: .5rem;
+
+    &:hover {
+        background-color: $main-button-background-color-hover;
+        box-shadow: 0 4px 15px 0 rgba(126, 52, 161, 0.75);
+        border-color: $main-button-background-color-hover;
+    }
+
+    &:active {
+        background-color: $main-button-background-color-active;
+        box-shadow: 0 0 15px 0 rgba(126, 52, 161, .75);
+    }
+
+    &:disabled {
+        background-color: $main-button-background-color-disabled;
+        color: $main-button-color-disabled;
+        border: 1px solid grey;
+        box-shadow: none;
+        cursor: initial;
+    }
+}

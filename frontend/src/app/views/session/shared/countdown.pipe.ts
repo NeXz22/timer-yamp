@@ -12,7 +12,7 @@ export class CountdownPipe implements PipeTransform {
     transform(time: number): string {
         const timeInSeconds = time / 1000;
         if (timeInSeconds > 0) {
-            const seconds = timeInSeconds % 60;
+            const seconds = Math.floor(timeInSeconds % 60);
             const minutes = Math.floor(timeInSeconds / 60) % 60;
             return [minutes, seconds].map(v => v < 10 ? '0' + v : v).join(':');
         } else {

@@ -1,0 +1,168 @@
+@use "src/assets/css/mixin" as *;
+@use "src/assets/css/variable" as *;
+
+.wrapper {
+    display: flex;
+    min-height: 100vh;
+
+    .sidebar {
+        flex: 0 0 350px;
+        background-color: #393939;
+        color: #fff;
+        padding: 2rem;
+
+        h1 {
+            font-weight: 600;
+            font-style: italic;
+        }
+    }
+
+    .main {
+        flex: 0 1 100%;
+        background-color: #2d2d2d;
+        color: white;
+        padding: 2rem;
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            .url-container {
+                flex: 0 1 50%;
+                display: flex;
+
+                input {
+                    flex: 0 1 100%;
+                }
+
+                button {
+                    flex: 0 0 auto;
+                    margin: 0 0 0 1rem;
+                }
+            }
+
+            .connection-watching-container {
+                flex: 0 0 50%;
+                text-align: right;
+
+                span + span {
+                    margin: 0 0 0 3rem;
+                }
+            }
+        }
+
+        .lists-container {
+            margin: 4rem 0;
+            display: flex;
+
+            .participant-list, .goal-list {
+                flex: 0 1 50%;
+            }
+
+            .participant-list {
+                margin: 0 1rem 0 0;
+            }
+
+            .goal-list {
+                margin: 0 0 0 1rem;
+            }
+        }
+    }
+}
+
+nav#navigation {
+    display: none;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: #373737;
+
+    ul {
+        display: flex;
+        list-style: none;
+        padding: .75rem 0;
+        margin: 0;
+        justify-content: center;
+    }
+}
+
+@include screen-l {
+    .wrapper {
+        flex-direction: column;
+        margin-bottom: 1rem;
+
+        .sidebar {
+            order: 2;
+        }
+
+        .main {
+            order: 1;
+        }
+    }
+
+    nav#navigation {
+        display: block;
+    }
+}
+
+@include screen-m {
+    .wrapper {
+        flex-direction: column;
+
+        .sidebar {
+            order: 2;
+        }
+
+        .main {
+            order: 1;
+
+            .info-row {
+                flex-direction: column;
+
+                .url-container {
+                    width: 100%;
+                    margin: 0 0 1rem 0;
+                }
+            }
+
+            .lists-container {
+                flex-direction: column;
+                margin: 2rem 0 0 0;
+
+                .participant-list, .goal-list {
+                    flex: 0 1 100%;
+                }
+
+                .participant-list {
+                    margin: 0;
+                }
+
+                .goal-list {
+                    margin: 0;
+                }
+            }
+        }
+    }
+}
+
+@include screen-s {
+    .wrapper {
+        .main {
+            .info-row {
+                .url-container {
+                    flex-direction: column;
+
+                    input {
+                        flex: 0 0 auto;
+                    }
+
+                    button {
+                        margin: 0;
+                    }
+                }
+            }
+        }
+    }
+}

@@ -1,7 +1,8 @@
+<h4>Participants</h4>
+
 <form (ngSubmit)="onNewParticipantSubmit()">
-    <label for="new-participant-input">Enter a new participant</label>
-    <input type="text" id="new-participant-input" #newParticipantInput>
-    <button type="submit" id="new-participant-button">Add</button>
+    <input type="text" id="new-participant-input" placeholder="new participant" autocomplete="off" #newParticipantInput>
+    <button type="submit" id="new-participant-button">+ Add new participant</button>
 </form>
 
 <yamp-drag-drop-list [items]="participants" (dropEventEmitter)="onParticipantDrop()"></yamp-drag-drop-list>

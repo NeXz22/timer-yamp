@@ -1,0 +1,24 @@
+/***********************************************************************************************************************
+Breakpoint-Mixins
+********************************************************************************************************************* */
+$screen-l-max: 1200px;
+$screen-m-max: 950px;
+$screen-s-max: 500px;
+
+@mixin screen-l {
+    @media (max-width: $screen-l-max) {
+        @content;
+    }
+}
+
+@mixin screen-m {
+    @media (max-width: $screen-m-max) {
+        @content;
+    }
+}
+
+@mixin screen-s {
+    @media (max-width: $screen-s-max) {
+        @content;
+    }
+}

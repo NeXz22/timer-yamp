@@ -1,34 +1,55 @@
-<p>
-    session-name: {{sessionId}}
-</p>
+<div class="wrapper">
 
-<p>
-    url: {{currentUrl}}
-    <button id="copy-to-clipboard" [cdkCopyToClipboard]="currentUrl">Copy to Clipboard</button>
-</p>
+    <div class="sidebar">
+        <h1><span class="font-light">timer.</span>YAMP</h1>
+        <h3>Settings</h3>
+        <p>
+            minutes:
+            <yamp-time-input  type="minutes" [value]="sessionService.countdownDesiredTime | millisecondsToMinutes"></yamp-time-input>
+        </p>
+        <p>
+            seconds:
+            <yamp-time-input type="seconds" [value]="sessionService.countdownDesiredTime | millisecondsToSeconds"></yamp-time-input>
+        </p>
+    </div>
 
-<p>
-    connection: {{sessionService.connectionStatus}}
-</p>
+    <div class="main">
+        <h3>
+            Welcome, you have joined: <span class="font-light">{{sessionId}}</span>
+        </h3>
 
-<p>
-    watching: {{sessionService.watching}}
-</p>
+        <div class="info-row">
+            <div class="url-container">
+                <input disabled value="{{currentUrl}}">
+                <button id="copy-to-clipboard" [cdkCopyToClipboard]="currentUrl">Copy URL</button>
+            </div>
 
-<yamp-countdown></yamp-countdown>
+            <div class="connection-watching-container">
+                <span><i class="icofont-network-tower"></i>: {{sessionService.connectionStatus ? 'connected' : 'disconnected' }}</span>
+                <span><i class="icofont-eye-alt"></i>: {{sessionService.watching}}</span>
+            </div>
 
-<h3>Settings</h3>
-<p>
-    minutes:
-    <yamp-time-input  type="minutes" [value]="sessionService.countdownDesiredTime | millisecondsToMinutes"></yamp-time-input>
-</p>
+            <div>
+            </div>
+        </div>
 
-<p>
-    seconds:
-    <yamp-time-input type="seconds" [value]="sessionService.countdownDesiredTime | millisecondsToSeconds"></yamp-time-input>
-</p>
+        <yamp-countdown></yamp-countdown>
 
-<h3>Lists</h3>
-<yamp-participant-list></yamp-participant-list>
+        <div class="lists-container">
+            <div class="participant-list">
+                <yamp-participant-list></yamp-participant-list>
+            </div>
+            <div class="goal-list">
+                <yamp-goal-list></yamp-goal-list>
+            </div>
+        </div>
+    </div>
+</div>
 
-<yamp-goal-list></yamp-goal-list>
+<nav id="navigation">
+    <ul>
+        <li>Timer</li>
+        <li>Timer</li>
+        <li>Timer</li>
+    </ul>
+</nav>

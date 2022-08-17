@@ -1,0 +1,64 @@
+.timer-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.button-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+div[role="progressbar"] {
+    width: 12rem;
+    height: 12rem;
+    border-radius: 50%;
+    background-color: #2d2d2d;
+    position: relative;
+    box-shadow: -1px 10px 20px 0px rgba(0, 0, 0, 0.33), -1px -9px 20px 0px rgba(255,255,255,0.075);
+    margin: 5rem 0 3rem 0;
+
+    &:before {
+        width: 11rem;
+        height: 11rem;
+        position: absolute;
+        background: conic-gradient(#393939 0deg, #6d7cff calc(var(--value) * 1deg), #383838 0deg);
+        content: "";
+        border-radius: 50%;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+    }
+
+    &:after {
+        width: 10rem;
+        height: 10rem;
+        position: absolute;
+        background-color: #2d2d2d;
+        content: "";
+        border-radius: 50%;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+    }
+
+    .time {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        z-index: 2;
+        transform: translate(-50%, -50%);
+        font-variant-numeric: tabular-nums;
+        font-size: 2rem;
+        font-weight: bold;
+    }
+}
+
+button {
+    width: 10rem;
+}
+
+button + button {
+    margin: 0 0 0 1rem;
+}

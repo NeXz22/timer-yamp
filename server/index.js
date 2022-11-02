@@ -120,6 +120,11 @@ function setupConnection() {
             });
         });
 
+        socket.on('countdown ended', (s) => {
+            sessionSettings.get(s.sessionId).countdownRunning = false;
+            sessionSettings.get(s.sessionId).countdownLeft = s.timeLeft;
+        });
+
         socket.on('time seconds settings changed', (s) => {
             sessionSettings.get(s.sessionId).desiredSeconds = s.desiredSeconds;
             io.in(s.sessionId).emit('seconds changed', {

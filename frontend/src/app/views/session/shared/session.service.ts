@@ -125,10 +125,19 @@ export class SessionService {
         this.timerObservable = timer(100, 200);
         this.timerSubscription = this.timerObservable
             .subscribe(() => {
-                if (this.timeAtLastTimerCall) {
-                    this.timeLeft -= Date.now() - this.timeAtLastTimerCall;
+                if (this.timeLeft <= 0) {
+                    this.timeLeft = 0;
+                    this.stopCountdown();
+                    this.countdownRunning = false;
+                    this.updateDesiredTime();
+                    this.countdownEnded();
+                    // TODO play sound
+                } else {
+                    if (this.timeAtLastTimerCall) {
+                        this.timeLeft -= Date.now() - this.timeAtLastTimerCall;
+                    }
+                    this.timeAtLastTimerCall = Date.now();
                 }
-                this.timeAtLastTimerCall = Date.now();
             });
     }
 
@@ -190,5 +199,12 @@ export class SessionService {
     private updateDesiredTime(): void {
         this.countdownDesiredTime = this.desiredSeconds + this.desiredMinutes;
         this.timeLeft = this.countdownDesiredTime;
+    }
+
+    private countdownEnded(): void {
+        this.socket?.emit('countdown ended', {
+            sessionId: this.sessionId,
+            timeLeft: this.countdownDesiredTime,
+        });
     }
 }

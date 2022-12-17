@@ -4,9 +4,12 @@
   "description": "node server",
   "main": "src/index.ts",
   "scripts": {
+    "build": "tsc",
     "test": "tsc && jest --testTimeout=10000 --detectOpenHandles",
-    "compile": "tsc",
-    "start": "tsc && node src/index.js"
+    "start": "tsc && node src/index.js",
+    "watch-tsc": "tsc src/index.ts -w",
+    "watch-server-js": "nodemon --watch src src/index.js",
+    "watch": "concurrently -k -p \"[{name}]\" -n \"TypeScript-Compiler,Server\" -c \"yellow.bold,magenta.bold\" \"npm run watch-tsc\" \"npm run watch-server-js\""
   },
   "author": "NeXz22",
   "license": "ISC",
@@ -18,7 +21,9 @@
   "devDependencies": {
     "@types/lodash": "^4.14.191",
     "@types/node": "^18.11.16",
+    "concurrently": "^7.6.0",
     "jest": "^29.3.1",
+    "nodemon": "^2.0.20",
     "supertest": "^6.3.3",
     "typescript": "^4.9.4"
   },

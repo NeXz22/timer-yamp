@@ -1,10 +1,10 @@
-const express = require('express');
-const app = express();
-const http = require('http');
-const socketIO = require('socket.io');
+import * as express from 'express';
+import {Server, createServer} from 'http';
+import {Server as SocketServer, Socket} from 'socket.io';
 
-let server;
-let io;
+const app = express();
+let server: Server;
+let io: SocketServer;
 let sessionSettings = new Map();
 
 const defaultSessionSettings = {
@@ -23,13 +23,13 @@ configureServer();
 setupConnection();
 
 
-app.get('/', (req, res) => {
+app.get('/', (_req, res) => {
     res.send('<h1>Hello world</h1>');
 });
 
 
 function configureServer() {
-    io = socketIO(server, {
+    io = new SocketServer(server, {
         cors: {
             origin: '*',
             methods: ['GET']
@@ -38,15 +38,15 @@ function configureServer() {
     log('Allowed CORS-Origins: *');
 }
 
-function startServer(port) {
-    server = http.createServer(app);
+function startServer(port: number) {
+    server = createServer(app);
     server.listen(4444, () => {
         logMultiple(['Server started', `Listening on *:${port}`]);
     });
 }
 
 function setupConnection() {
-    io.on('connection', (socket) => {
+    io.on('connection', (socket: Socket) => {
         log(`[${socket.id}] connected. Number of currently connected sockets: ${io.engine.clientsCount}`);
         socket.on('disconnecting', onDisconnecting(socket));
         socket.on('disconnect', onDisconnect(socket));
@@ -61,7 +61,7 @@ function setupConnection() {
     });
 }
 
-function onDisconnecting(socket) {
+function onDisconnecting(socket: Socket) {
     return function () {
         const sessionsToLeave = findSessionsToLeave(socket);
         for (const session of sessionsToLeave) {
@@ -71,13 +71,13 @@ function onDisconnecting(socket) {
 
 }
 
-function onDisconnect(socket) {
+function onDisconnect(socket: Socket) {
     return function (reason) {
         log(`[${socket.id}] disconnected. Reason: ${reason}. Number of currently connected sockets: ${io.engine.clientsCount}`);
     }
 }
 
-function onSessionJoined(socket) {
+function onSessionJoined(socket: Socket) {
     return function (sessionToJoin) {
         socket.join(sessionToJoin);
         const message = `[${socket.id}] joined the session [${sessionToJoin}]`;
@@ -99,7 +99,7 @@ function onSessionJoined(socket) {
     }
 }
 
-function onParticipantsChanged(socket) {
+function onParticipantsChanged(socket: Socket) {
     return function (participantsChange) {
         const message = `[${socket.id}] emitted new participants: [${participantsChange.participants}]`;
         io.in(participantsChange.sessionId).emit('to all clients', message);
@@ -112,7 +112,7 @@ function onParticipantsChanged(socket) {
 
 }
 
-function onGoalsChanged(socket) {
+function onGoalsChanged(socket: Socket) {
     return function (goalsChange) {
         const message = `[${socket.id}] emitted new goals: [${goalsChange.goals}]`;
         io.in(goalsChange.sessionId).emit('to all clients', message);

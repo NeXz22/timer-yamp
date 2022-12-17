@@ -35,7 +35,27 @@ yarn-error.log
 /libpeerconnection.log
 testem.log
 /typings
+/documentation/
 
 # System files
 .DS_Store
 Thumbs.db
+/documentation/components/
+/documentation/directives/
+/documentation/fonts/
+/documentation/graph/
+/documentation/images/
+/documentation/injectables/
+/documentation/interfaces/
+/documentation/js/
+/documentation/miscellaneous/
+/documentation/modules/
+/documentation/pipes/
+/documentation/styles/
+/documentation/coverage.html
+/documentation/dependencies.html
+/documentation/index.html
+/documentation/modules.html
+/documentation/overview.html
+/documentation/properties.html
+/documentation/routes.html

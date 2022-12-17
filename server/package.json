@@ -4,9 +4,9 @@
   "description": "node server",
   "main": "src/index.ts",
   "scripts": {
-    "test": "node run compile && jest --testTimeout=10000 --detectOpenHandles",
+    "test": "tsc && jest --testTimeout=10000 --detectOpenHandles",
     "compile": "tsc",
-    "start": "node src/index.js"
+    "start": "tsc && node src/index.js"
   },
   "author": "NeXz22",
   "license": "ISC",

@@ -11,6 +11,14 @@
             seconds:
             <yamp-time-input type="seconds" [value]="sessionService.countdownDesiredTime | millisecondsToSeconds"></yamp-time-input>
         </p>
+        <p>
+            <select name="sounds" id="sounds" [(ngModel)]="selectedSound">
+                <option *ngFor="let sound of sounds" [ngValue]="sound">{{sound.name}}</option>
+            </select>
+            <button type="button" (click)="playSelectedSound()">play</button>
+            <br>
+            <input [(ngModel)]="selectedVolume" type="range" min="0" max="100" class="slider" id="myRange">
+        </p>
     </div>
 
     <div class="main">

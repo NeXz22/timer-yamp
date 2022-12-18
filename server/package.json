@@ -7,7 +7,7 @@
     "build": "tsc",
     "test": "tsc && jest --testTimeout=10000 --detectOpenHandles",
     "start": "tsc && node src/index.js",
-    "watch-tsc": "tsc src/index.ts -w",
+    "watch-tsc": "tsc -w",
     "watch-server-js": "nodemon --watch src src/index.js",
     "watch": "concurrently -k -p \"[{name}]\" -n \"TypeScript-Compiler,Server\" -c \"yellow.bold,magenta.bold\" \"npm run watch-tsc\" \"npm run watch-server-js\""
   },

@@ -15,32 +15,5 @@ describe('Server Tests', () => {
         expect(response.text).toEqual('<h1>Hello world</h1>');
     });
 
-    it('should find rooms to leave', async () => {
-        const rooms = new Set(['socketId', 'sessionToLeave1', 'sessionToLeave2']);
-        const socketMock = {id: 'socketId', get rooms() {return rooms}};
-
-        const sessionToLeave = server.findSessionsToLeave(socketMock);
-
-        expect(sessionToLeave).toEqual(['sessionToLeave1', 'sessionToLeave2']);
-    });
-
-    it('should return empty array if no rooms to leave exists', async () => {
-        const rooms = new Set(['socketId']);
-        const socketMock = {id: 'socketId', get rooms() {return rooms}};
-
-        const sessionToLeave = server.findSessionsToLeave(socketMock);
-
-        expect(sessionToLeave).toEqual([]);
-    });
-
-    it('should return empty array if no rooms exist', async () => {
-        const rooms = new Set([]);
-        const socketMock = {id: 'socketId', get rooms() {return rooms}};
-
-        const sessionToLeave = server.findSessionsToLeave(socketMock);
-
-        expect(sessionToLeave).toEqual([]);
-    });
-
     server.stopServer();
 });

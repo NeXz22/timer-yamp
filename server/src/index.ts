@@ -1,26 +1,21 @@
 import * as express from 'express';
 import {Server, createServer} from 'http';
 import {Server as SocketServer, Socket} from 'socket.io';
+import {EVENT} from './event.enum';
+import {DEFAULT_SESSION_SETTINGS} from './default-session-settings';
+import {SessionSettingsModel} from './session-settings.model';
 
 const app = express();
 let server: Server;
 let io: SocketServer;
-let sessionSettings = new Map();
-
-const defaultSessionSettings = {
-    participants: [],
-    goals: [],
-    countdownRunning: false,
-    countdownLeft: 900000,
-    timeCountdownStarted: 0,
-    desiredSeconds: 0,
-    desiredMinutes: 900000,
-};
+let sessionSettings: Map<string, SessionSettingsModel> = new Map();
 
 
-startServer(4444);
-configureServer();
-setupConnection();
+(async () => {
+    await startServer(4444);
+    configureServer();
+    initEventListeners();
+})();
 
 
 app.get('/', (_req, res) => {
@@ -38,26 +33,25 @@ function configureServer() {
     log('Allowed CORS-Origins: *');
 }
 
-function startServer(port: number) {
+async function startServer(port: number) {
     server = createServer(app);
-    server.listen(4444, () => {
-        logMultiple(['Server started', `Listening on *:${port}`]);
-    });
+    await server.listen(4444);
+    logMultiple(['Server started', `Listening on *:${port}`]);
 }
 
-function setupConnection() {
+function initEventListeners() {
     io.on('connection', (socket: Socket) => {
         log(`[${socket.id}] connected. Number of currently connected sockets: ${io.engine.clientsCount}`);
-        socket.on('disconnecting', onDisconnecting(socket));
-        socket.on('disconnect', onDisconnect(socket));
-        socket.on('join session', onSessionJoined(socket));
-        socket.on('participants changed', onParticipantsChanged(socket));
-        socket.on('goals changed', onGoalsChanged(socket));
-        socket.on('start stop countdown', onStartStopCountdown());
-        socket.on('reset countdown', onResetCountdown());
-        socket.on('countdown ended', onCountdownEnded());
-        socket.on('time seconds settings changed', onTimeSecondsSettingsChanged());
-        socket.on('time minutes settings changed', onTimeMinutesSettingsChanged());
+        socket.on(EVENT.DISCONNECTING, onDisconnecting(socket));
+        socket.on(EVENT.DISCONNECT, onDisconnect(socket));
+        socket.on(EVENT.SESSION_JOINED, onSessionJoined(socket));
+        socket.on(EVENT.PARTICIPANTS_CHANGED, onParticipantsChanged(socket));
+        socket.on(EVENT.GOALS_CHANGED, onGoalsChanged(socket));
+        socket.on(EVENT.START_STOP_COUNTDOWN, onStartStopCountdown());
+        socket.on(EVENT.RESET_COUNTDOWN, onResetCountdown());
+        socket.on(EVENT.COUNTDOWN_ENDED, onCountdownEnded());
+        socket.on(EVENT.TIME_SECONDS_SETTINGS_CHANGED, onTimeSecondsSettingsChanged());
+        socket.on(EVENT.TIME_MINUTES_SETTINGS_CHANGED, onTimeMinutesSettingsChanged());
     });
 }
 
@@ -65,10 +59,9 @@ function onDisconnecting(socket: Socket) {
     return function () {
         const sessionsToLeave = findSessionsToLeave(socket);
         for (const session of sessionsToLeave) {
-            io.in(session).emit('watch changed', io.sockets.adapter.rooms.get(session).size - 1);
+            io.in(session).emit(EVENT.WATCH_CHANGED, io.sockets.adapter.rooms.get(session).size - 1);
         }
     }
-
 }
 
 function onDisconnect(socket: Socket) {
@@ -81,8 +74,8 @@ function onSessionJoined(socket: Socket) {
     return function (sessionToJoin) {
         socket.join(sessionToJoin);
         const message = `[${socket.id}] joined the session [${sessionToJoin}]`;
-        io.in(sessionToJoin).emit('to all clients', message);
-        io.in(sessionToJoin).emit('watch changed', io.sockets.adapter.rooms.get(sessionToJoin).size);
+        io.in(sessionToJoin).emit(EVENT.TO_ALL_CLIENTS, message);
+        io.in(sessionToJoin).emit(EVENT.WATCH_CHANGED, io.sockets.adapter.rooms.get(sessionToJoin).size);
         log(message);
 
         if (sessionSettings.has(sessionToJoin)) {
@@ -91,10 +84,10 @@ function onSessionJoined(socket: Socket) {
                 if (sessionSettings.get(sessionToJoin).countdownRunning) {
                     existingSessionSettings.countdownLeft -= Date.now() - existingSessionSettings.timeCountdownStarted;
                 }
-                socket.emit('settings for requested session already exist', existingSessionSettings)
+                socket.emit(EVENT.SETTINGS_FOR_REQUESTED_SESSION_ALREADY_EXIST, existingSessionSettings)
             }
         } else {
-            sessionSettings.set(sessionToJoin, {...defaultSessionSettings});
+            sessionSettings.set(sessionToJoin, {...DEFAULT_SESSION_SETTINGS} as SessionSettingsModel);
         }
     }
 }
@@ -102,27 +95,25 @@ function onSessionJoined(socket: Socket) {
 function onParticipantsChanged(socket: Socket) {
     return function (participantsChange) {
         const message = `[${socket.id}] emitted new participants: [${participantsChange.participants}]`;
-        io.in(participantsChange.sessionId).emit('to all clients', message);
+        io.in(participantsChange.sessionId).emit(EVENT.TO_ALL_CLIENTS, message);
         log(message);
 
         sessionSettings.get(participantsChange.sessionId).participants = participantsChange.participants;
 
-        socket.broadcast.to(participantsChange.sessionId).emit('participants updated', participantsChange.participants);
+        socket.broadcast.to(participantsChange.sessionId).emit(EVENT.PARTICIPANTS_UPDATED, participantsChange.participants);
     }
-
 }
 
 function onGoalsChanged(socket: Socket) {
     return function (goalsChange) {
         const message = `[${socket.id}] emitted new goals: [${goalsChange.goals}]`;
-        io.in(goalsChange.sessionId).emit('to all clients', message);
+        io.in(goalsChange.sessionId).emit(EVENT.TO_ALL_CLIENTS, message);
         log(message);
 
         sessionSettings.get(goalsChange.sessionId).goals = goalsChange.goals;
 
-        socket.broadcast.to(goalsChange.sessionId).emit('goals updated', goalsChange.goals);
+        socket.broadcast.to(goalsChange.sessionId).emit(EVENT.GOALS_UPDATED, goalsChange.goals);
     }
-
 }
 
 function onStartStopCountdown() {
@@ -132,7 +123,7 @@ function onStartStopCountdown() {
         if (sessionSettings.get(s.sessionId).countdownRunning) {
             sessionSettings.get(s.sessionId).timeCountdownStarted = Date.now();
         }
-        io.in(s.sessionId).emit('countdown update', {
+        io.in(s.sessionId).emit(EVENT.COUNTDOWN_UPDATE, {
             countdownRunning: sessionSettings.get(s.sessionId).countdownRunning,
             countdownLeft: sessionSettings.get(s.sessionId).countdownLeft
         });
@@ -142,7 +133,7 @@ function onStartStopCountdown() {
 function onResetCountdown() {
     return function (s) {
         sessionSettings.get(s.sessionId).countdownLeft = s.timeLeft;
-        io.in(s.sessionId).emit('countdown update', {
+        io.in(s.sessionId).emit(EVENT.COUNTDOWN_UPDATE, {
             countdownRunning: sessionSettings.get(s.sessionId).countdownRunning,
             countdownLeft: sessionSettings.get(s.sessionId).countdownLeft
         });
@@ -154,23 +145,21 @@ function onCountdownEnded() {
         sessionSettings.get(s.sessionId).countdownRunning = false;
         sessionSettings.get(s.sessionId).countdownLeft = s.timeLeft;
     }
-
 }
 
 function onTimeSecondsSettingsChanged() {
     return function (s) {
         sessionSettings.get(s.sessionId).desiredSeconds = s.desiredSeconds;
-        io.in(s.sessionId).emit('seconds changed', {
+        io.in(s.sessionId).emit(EVENT.SECONDS_CHANGED, {
             desiredSeconds: s.desiredSeconds
         });
     }
-
 }
 
 function onTimeMinutesSettingsChanged() {
     return function (s) {
         sessionSettings.get(s.sessionId).desiredMinutes = s.desiredMinutes;
-        io.in(s.sessionId).emit('minutes changed', {
+        io.in(s.sessionId).emit(EVENT.MINUTES_CHANGED, {
             desiredMinutes: s.desiredMinutes
         });
     }
@@ -190,8 +179,8 @@ function logMultiple(messages) {
     }
 }
 
-function findSessionsToLeave(socket) {
-    const joinedSessions = socket.adapter.socketRooms(socket.id);
+function findSessionsToLeave(socket: Socket) {
+    const joinedSessions = socket.rooms;
     joinedSessions.delete(socket.id);
     return [...joinedSessions];
 }

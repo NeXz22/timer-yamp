@@ -17,7 +17,7 @@ describe('Server Tests', () => {
 
     it('should find rooms to leave', async () => {
         const rooms = new Set(['socketId', 'sessionToLeave1', 'sessionToLeave2']);
-        const socketMock = {id: 'socketId', adapter: {socketRooms: () => rooms}};
+        const socketMock = {id: 'socketId', get rooms() {return rooms}};
 
         const sessionToLeave = server.findSessionsToLeave(socketMock);
 
@@ -26,7 +26,7 @@ describe('Server Tests', () => {
 
     it('should return empty array if no rooms to leave exists', async () => {
         const rooms = new Set(['socketId']);
-        const socketMock = {id: 'socketId', adapter: {socketRooms: () => rooms}};
+        const socketMock = {id: 'socketId', get rooms() {return rooms}};
 
         const sessionToLeave = server.findSessionsToLeave(socketMock);
 
@@ -35,7 +35,7 @@ describe('Server Tests', () => {
 
     it('should return empty array if no rooms exist', async () => {
         const rooms = new Set([]);
-        const socketMock = {id: 'socketId', adapter: {socketRooms: () => rooms}};
+        const socketMock = {id: 'socketId', get rooms() {return rooms}};
 
         const sessionToLeave = server.findSessionsToLeave(socketMock);
 

@@ -1,4 +1,5 @@
 export const EVENT = {
+    CONNECTION: 'connection',
     DISCONNECT: 'disconnect',
     DISCONNECTING: 'disconnecting',
     SESSION_JOINED: 'join session',

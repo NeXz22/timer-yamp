@@ -27,7 +27,7 @@ class SocketIoServer extends Server {
     }
 
     private initEventListeners() {
-        this.on('connection', (socket: Socket) => {
+        this.on(EVENT.CONNECTION, (socket: Socket) => {
             socket.on(EVENT.DISCONNECTING, this.onDisconnecting(socket));
             socket.on(EVENT.DISCONNECT, this.onDisconnect(socket));
             socket.on(EVENT.SESSION_JOINED, this.onSessionJoined(socket));

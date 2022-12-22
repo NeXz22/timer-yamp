@@ -1,6 +1,7 @@
 import {AfterContentInit, Component, ContentChild, EventEmitter, Input, Output, TemplateRef} from '@angular/core';
-import {CdkDragDrop, moveItemInArray} from '@angular/cdk/drag-drop';
+import {CdkDragDrop} from '@angular/cdk/drag-drop';
 import {YampTemplateDirective} from '../shared/yamp-template.directive';
+import {BehaviorSubject} from 'rxjs';
 
 @Component({
     selector: 'yamp-drag-drop-list',
@@ -11,9 +12,9 @@ export class DragDropListComponent implements AfterContentInit {
 
     @ContentChild(YampTemplateDirective) templateDirective!: YampTemplateDirective;
 
-    @Input() items: string[] = [];
+    @Input() items$!: BehaviorSubject<string[]>;
 
-    @Output() dropEventEmitter = new EventEmitter<undefined>();
+    @Output() dropEventEmitter = new EventEmitter<{ previousIndex: number, newIndex: number }>();
 
     itemTemplate: TemplateRef<any> | null = null;
 
@@ -28,24 +29,8 @@ export class DragDropListComponent implements AfterContentInit {
     }
 
     onDrop(event: CdkDragDrop<string[]>): void {
-        const originalArray = [...this.items];
-
-        moveItemInArray(this.items, event.previousIndex, event.currentIndex);
-
-        if (!this.isEqual(originalArray, this.items)) {
-            this.dropEventEmitter.emit();
+        if (event.previousIndex !== event.currentIndex) {
+            this.dropEventEmitter.emit({previousIndex: event.previousIndex, newIndex: event.currentIndex});
         }
-    }
-
-    isEqual(array1: string[], array2: string[]): boolean {
-        if (array1.length !== array2.length) {
-            return false;
-        }
-        for (let i = 0; i < array1.length; i += 1) {
-            if (array1[i] !== array2[i]) {
-                return false;
-            }
-        }
-        return true;
     }
 }

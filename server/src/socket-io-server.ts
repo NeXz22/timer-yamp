@@ -3,6 +3,11 @@ import {Server as HttpSever} from 'http';
 import {EVENT} from './event.enum';
 import {DEFAULT_SESSION_SETTINGS} from './default-session-settings';
 import {SessionSettingsModel} from './session-settings.model';
+import {NewGoalSubmit} from './model/new-goal-submit.model';
+import {DeleteGoalSubmit} from './model/delete-goal-submit.model';
+import {ArraySortingSubmit} from './model/array-sorting-submit.model';
+import {NewParticipantSubmit} from './model/new-participant-submit.model';
+import {DeleteParticipantSubmit} from './model/delete-participant-submit.model';
 
 class SocketIoServer extends Server {
 
@@ -31,8 +36,12 @@ class SocketIoServer extends Server {
             socket.on(EVENT.DISCONNECTING, this.onDisconnecting(socket));
             socket.on(EVENT.DISCONNECT, this.onDisconnect(socket));
             socket.on(EVENT.SESSION_JOINED, this.onSessionJoined(socket));
-            socket.on(EVENT.PARTICIPANTS_CHANGED, this.onParticipantsChanged(socket));
-            socket.on(EVENT.GOALS_CHANGED, this.onGoalsChanged(socket));
+            socket.on(EVENT.PARTICIPANT_SORTING_CHANGED, this.onParticipantsSortingChanged());
+            socket.on(EVENT.NEW_PARTICIPANT_SUBMITTED, this.onNewParticipantSubmitted());
+            socket.on(EVENT.PARTICIPANT_DELETED, this.onParticipantDeleted());
+            socket.on(EVENT.GOALS_SORTING_CHANGED, this.onGoalsSortingChanged());
+            socket.on(EVENT.NEW_GOAL_SUBMITTED, this.onNewGoalSubmitted());
+            socket.on(EVENT.GOAL_DELETED, this.onGoalDeleted());
             socket.on(EVENT.START_STOP_COUNTDOWN, this.onStartStopCountdown());
             socket.on(EVENT.RESET_COUNTDOWN, this.onResetCountdown());
             socket.on(EVENT.COUNTDOWN_ENDED, this.onCountdownEnded());
@@ -78,27 +87,53 @@ class SocketIoServer extends Server {
         }
     }
 
-    private onParticipantsChanged(socket: Socket) {
-        return function (participantsChange) {
-            const message = `[${socket.id}] emitted new participants: [${participantsChange.participants}]`;
-            SocketIoServer.io.in(participantsChange.sessionId).emit(EVENT.TO_ALL_CLIENTS, message);
-            SocketIoServer.log(message);
+    private onParticipantsSortingChanged() {
+        return function (settingsUpdate: ArraySortingSubmit) {
+            SocketIoServer.moveElementInArray(SocketIoServer.sessionSettings.get(settingsUpdate.sessionId).participants, settingsUpdate.indices.previousIndex, settingsUpdate.indices.newIndex);
 
-            SocketIoServer.sessionSettings.get(participantsChange.sessionId).participants = participantsChange.participants;
-
-            socket.broadcast.to(participantsChange.sessionId).emit(EVENT.PARTICIPANTS_UPDATED, participantsChange.participants);
+            SocketIoServer.io.in(settingsUpdate.sessionId).emit(EVENT.PARTICIPANTS_UPDATED, SocketIoServer.sessionSettings.get(settingsUpdate.sessionId).participants);
         }
     }
 
-    private onGoalsChanged(socket: Socket) {
-        return function (goalsChange) {
-            const message = `[${socket.id}] emitted new goals: [${goalsChange.goals}]`;
-            SocketIoServer.io.in(goalsChange.sessionId).emit(EVENT.TO_ALL_CLIENTS, message);
-            SocketIoServer.log(message);
+    private onNewParticipantSubmitted() {
+        return function (settingsUpdate: NewParticipantSubmit) {
+            const sessionParticipants = SocketIoServer.sessionSettings.get(settingsUpdate.sessionId).participants;
+            sessionParticipants.push(settingsUpdate.newParticipant);
+            SocketIoServer.io.in(settingsUpdate.sessionId).emit(EVENT.PARTICIPANTS_UPDATED, sessionParticipants);
+        }
+    }
 
-            SocketIoServer.sessionSettings.get(goalsChange.sessionId).goals = goalsChange.goals;
+    private onParticipantDeleted() {
+        return function (settingsUpdate: DeleteParticipantSubmit) {
+            const sessionParticipants = SocketIoServer.sessionSettings.get(settingsUpdate.sessionId).participants;
+            const updatedParticipants = sessionParticipants.filter(participant => participant !== settingsUpdate.participantToDelete);
+            SocketIoServer.sessionSettings.get(settingsUpdate.sessionId).participants = updatedParticipants;
+            SocketIoServer.io.in(settingsUpdate.sessionId).emit(EVENT.PARTICIPANTS_UPDATED, updatedParticipants);
+        }
+    }
 
-            socket.broadcast.to(goalsChange.sessionId).emit(EVENT.GOALS_UPDATED, goalsChange.goals);
+    private onGoalsSortingChanged() {
+        return function (settingsUpdate: ArraySortingSubmit) {
+            SocketIoServer.moveElementInArray(SocketIoServer.sessionSettings.get(settingsUpdate.sessionId).goals, settingsUpdate.indices.previousIndex, settingsUpdate.indices.newIndex);
+
+            SocketIoServer.io.in(settingsUpdate.sessionId).emit(EVENT.GOALS_UPDATED, SocketIoServer.sessionSettings.get(settingsUpdate.sessionId).goals);
+        }
+    }
+
+    private onNewGoalSubmitted() {
+        return function (settingsUpdate: NewGoalSubmit) {
+            const sessionGoals = SocketIoServer.sessionSettings.get(settingsUpdate.sessionId).goals;
+            sessionGoals.push(settingsUpdate.newGoal);
+            SocketIoServer.io.in(settingsUpdate.sessionId).emit(EVENT.GOALS_UPDATED, sessionGoals);
+        }
+    }
+
+    private onGoalDeleted() {
+        return function (settingsUpdate: DeleteGoalSubmit) {
+            const sessionGoals = SocketIoServer.sessionSettings.get(settingsUpdate.sessionId).goals;
+            const updatedGoals = sessionGoals.filter(goal => goal !== settingsUpdate.goalToDelete);
+            SocketIoServer.sessionSettings.get(settingsUpdate.sessionId).goals = updatedGoals;
+            SocketIoServer.io.in(settingsUpdate.sessionId).emit(EVENT.GOALS_UPDATED, updatedGoals);
         }
     }
 
@@ -160,6 +195,10 @@ class SocketIoServer extends Server {
         joinedSessions.delete(socket.id);
         return [...joinedSessions];
     }
+
+    private static moveElementInArray(arr: string[], old_index: number, new_index: number): void {
+        arr.splice(new_index, 0, arr.splice(old_index, 1)[0]);
+    };
 }
 
 export default SocketIoServer;

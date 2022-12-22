@@ -1,5 +1,5 @@
 <ul cdkDropList (cdkDropListDropped)="onDrop($event)">
-    <li *ngFor="let item of items" cdkDrag cdkDragBoundary="ul" cdkDragLockAxis="y">
+    <li *ngFor="let item of items$ | async" cdkDrag cdkDragBoundary="ul" cdkDragLockAxis="y">
         <ng-container *ngIf="itemTemplate" [ngTemplateOutlet]="itemTemplate"
                       [ngTemplateOutletContext]="{$implicit: item}"></ng-container>
         <ng-container *ngIf="!itemTemplate" [ngTemplateOutlet]="defaultItemTemplate"

@@ -50,18 +50,4 @@ describe('ParticipantListComponent', () => {
     it('should create', () => {
         expect(component).toBeTruthy();
     });
-
-    it('should add input value to participants-array', () => {
-        newParticipantInput.value = 'new participant';
-        newParticipantButton.click();
-
-        expect(component.participants).toEqual(['new participant']);
-    });
-
-    it('should clear input after submit', () => {
-        newParticipantInput.value = 'new participant';
-        newParticipantButton.click();
-
-        expect(newParticipantInput.value).toBe('');
-    });
 });

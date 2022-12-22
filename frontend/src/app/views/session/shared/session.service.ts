@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {Observable, Subject, Subscription, timer} from 'rxjs';
+import {BehaviorSubject, Observable, Subject, Subscription, timer} from 'rxjs';
 import {io, Socket} from 'socket.io-client';
 import {LocalSession} from './localSession';
 import {ConnectionLostDialogComponent} from '../connection-lost-dialog/connection-lost-dialog.component';
@@ -20,7 +20,8 @@ export class SessionService {
     watching: number = 0;
     connectionStatus: boolean = false;
     participantsSubject: Subject<string[]> = new Subject<string[]>();
-    goalsSubject: Subject<string[]> = new Subject<string[]>();
+    participants$: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([]);
+    goals$: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([]);
     countdownRunning: boolean = false;
     timeLeft: number = 900000;
     countdownDesiredTime: number = 900000;
@@ -70,8 +71,8 @@ export class SessionService {
             this.sessionSettings.participants = message.participants;
             this.sessionSettings.goals = message.goals;
 
-            this.participantsSubject.next(this.sessionSettings.participants);
-            this.goalsSubject.next(this.sessionSettings.goals);
+            this.participants$.next(message.participants);
+            this.goals$.next(message.goals);
 
             this.desiredSeconds = message.desiredSeconds;
             this.desiredMinutes = message.desiredMinutes;
@@ -89,13 +90,13 @@ export class SessionService {
         this.socket.on('participants updated', (participants) => {
             this.sessionSettings.participants = participants;
 
-            this.participantsSubject.next(this.sessionSettings.participants);
+            this.participants$.next(participants);
         });
 
         this.socket.on('goals updated', (goals) => {
             this.sessionSettings.goals = goals;
 
-            this.goalsSubject.next(this.sessionSettings.goals);
+            this.goals$.next(goals);
         });
 
         this.socket.on('countdown update', (countdownUpdate) => {
@@ -146,19 +147,45 @@ export class SessionService {
         this.timerObservable = null;
     }
 
-    participantsChanged(participants: string[]): void {
-        this.sessionSettings.participants = participants;
-        this.socket?.emit('participants changed', {
+    newParticipantSubmitted(newParticipant: string) {
+        this.socket?.emit('new participant submitted', {
             sessionId: this.sessionId,
-            participants: this.sessionSettings.participants
+            newParticipant: newParticipant
         });
     }
 
-    goalsChanged(goals: string[]): void {
-        this.sessionSettings.goals = goals;
-        this.socket?.emit('goals changed', {
+    participantsSortingChanged(indices: { previousIndex: number; newIndex: number }) {
+        this.socket?.emit('participants sorting changed', {
             sessionId: this.sessionId,
-            goals: this.sessionSettings.goals
+            indices: indices
+        });
+    }
+
+    participantDeleted(participantToDelete: string) {
+        this.socket?.emit('participant deleted', {
+            sessionId: this.sessionId,
+            participantToDelete: participantToDelete
+        });
+    }
+
+    goalsSortingChanged(indices: { previousIndex: number, newIndex: number }): void {
+        this.socket?.emit('goals sorting changed', {
+            sessionId: this.sessionId,
+            indices: indices
+        });
+    }
+
+    goalDeleted(goalToDelete: string): void {
+        this.socket?.emit('goal deleted', {
+            sessionId: this.sessionId,
+            goalToDelete: goalToDelete
+        });
+    }
+
+    newGoalSubmitted(newGoal: string) {
+        this.socket?.emit('new goal submitted', {
+            sessionId: this.sessionId,
+            newGoal: newGoal
         });
     }
 

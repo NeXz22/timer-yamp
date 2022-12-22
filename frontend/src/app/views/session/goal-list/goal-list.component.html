@@ -5,8 +5,9 @@
     <button type="submit" id="new-goal-button">+ Add new goal</button>
 </form>
 
-<yamp-drag-drop-list [items]="goals" (dropEventEmitter)="onGoalDrop()">
+<yamp-drag-drop-list [items$]="sessionService.goals$" (dropEventEmitter)="onGoalDrop($event)">
     <ng-template yampTemplate="item" let-goal>
-        <span>{{'custom-template ' + goal}}</span>
+        <span>{{goal}}</span>
+        <span><button (click)="onDeleteGoalClicked(goal)">delete</button></span>
     </ng-template>
 </yamp-drag-drop-list>

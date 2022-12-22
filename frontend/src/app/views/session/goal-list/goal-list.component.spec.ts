@@ -5,7 +5,7 @@ import {By} from '@angular/platform-browser';
 import {Component, Input} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {SessionService} from '../shared/session.service';
-import {Subject} from 'rxjs';
+import {BehaviorSubject} from 'rxjs';
 
 @Component({selector: 'yamp-drag-drop-list', template: ''})
 class DragDropListStubComponent {
@@ -39,7 +39,7 @@ describe('GoalListComponent', () => {
         fixture = TestBed.createComponent(GoalListComponent);
         component = fixture.componentInstance;
         sessionServiceSpy = TestBed.inject(SessionService) as jasmine.SpyObj<SessionService>;
-        sessionServiceSpy.goalsSubject = new Subject<string[]>();
+        sessionServiceSpy.goals$ = new BehaviorSubject<string[]>([]);
         newGoalInput = fixture.debugElement.query(By.css('#new-goal-input')).nativeElement;
         newGoalButton = fixture.debugElement.query(By.css('#new-goal-button')).nativeElement;
         fixture.detectChanges();
@@ -47,19 +47,5 @@ describe('GoalListComponent', () => {
 
     it('should create', () => {
         expect(component).toBeTruthy();
-    });
-
-    it('should add input value to goals-array', () => {
-        newGoalInput.value = 'new goal';
-        newGoalButton.click();
-
-        expect(component.goals).toEqual(['new goal']);
-    });
-
-    it('should clear input after submit', () => {
-        newGoalInput.value = 'new goal';
-        newGoalButton.click();
-
-        expect(newGoalInput.value).toBe('');
     });
 });

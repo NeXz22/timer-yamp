@@ -13,7 +13,7 @@ export class ParticipantListComponent implements OnInit {
     participants: string[] = [];
 
     constructor(
-        private sessionService: SessionService,
+        public sessionService: SessionService,
     ) {
     }
 
@@ -26,14 +26,18 @@ export class ParticipantListComponent implements OnInit {
     }
 
     onNewParticipantSubmit(): void {
-        if (this.newParticipantInputRef.nativeElement.value.trim()) {
-            this.participants.push(this.newParticipantInputRef.nativeElement.value.trim());
+        const newParticipant = this.newParticipantInputRef.nativeElement.value.trim();
+        if (newParticipant) {
             this.newParticipantInputRef.nativeElement.value = '';
-            this.sessionService.participantsChanged(this.participants);
+            this.sessionService.newParticipantSubmitted(newParticipant);
         }
     }
 
-    onParticipantDrop(): void {
-        this.sessionService.participantsChanged(this.participants);
+    onParticipantDrop(indices: { previousIndex: number; newIndex: number }): void {
+        this.sessionService.participantsSortingChanged(indices);
+    }
+
+    onDeleteParticipantClicked(participantToDelete: string): void {
+        this.sessionService.participantDeleted(participantToDelete);
     }
 }

@@ -5,4 +5,9 @@
     <button type="submit" id="new-participant-button">+ Add new participant</button>
 </form>
 
-<yamp-drag-drop-list [items]="participants" (dropEventEmitter)="onParticipantDrop()"></yamp-drag-drop-list>
+<yamp-drag-drop-list [items$]="sessionService.participants$" (dropEventEmitter)="onParticipantDrop($event)">
+    <ng-template yampTemplate="item" let-participant>
+        <span>{{participant}}</span>
+        <span><button (click)="onDeleteParticipantClicked(participant)">delete</button></span>
+    </ng-template>
+</yamp-drag-drop-list>

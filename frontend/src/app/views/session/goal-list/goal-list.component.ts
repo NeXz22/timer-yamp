@@ -13,12 +13,12 @@ export class GoalListComponent implements OnInit {
     goals: string[] = [];
 
     constructor(
-        private sessionService: SessionService,
+        public sessionService: SessionService,
     ) {
     }
 
     ngOnInit(): void {
-        this.sessionService.goalsSubject.subscribe({
+        this.sessionService.goals$.subscribe({
             next: newGoals => {
                 this.goals = newGoals;
             },
@@ -26,14 +26,18 @@ export class GoalListComponent implements OnInit {
     }
 
     onNewGoalSubmit(): void {
-        if (this.newGoalInputRef.nativeElement.value.trim()) {
-            this.goals.push(this.newGoalInputRef.nativeElement.value.trim());
+        const newGoal = this.newGoalInputRef.nativeElement.value.trim();
+        if (newGoal) {
             this.newGoalInputRef.nativeElement.value = '';
-            this.sessionService.goalsChanged(this.goals);
+            this.sessionService.newGoalSubmitted(newGoal);
         }
     }
 
-    onGoalDrop(): void {
-        this.sessionService.goalsChanged(this.goals);
+    onGoalDrop(indices: { previousIndex: number; newIndex: number }): void {
+        this.sessionService.goalsSortingChanged(indices);
+    }
+
+    onDeleteGoalClicked(goalToDelete: string): void {
+        this.sessionService.goalDeleted(goalToDelete);
     }
 }

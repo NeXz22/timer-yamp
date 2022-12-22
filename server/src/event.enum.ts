@@ -23,4 +23,8 @@ export const EVENT = {
     COUNTDOWN_UPDATE: 'countdown update',
     SECONDS_CHANGED: 'seconds changed',
     MINUTES_CHANGED: 'minutes changed',
+    NEW_ROLE_SUBMITTED: 'new role submitted',
+    ROLES_CHANGED: 'roles changed',
+    ROLE_DELETED: 'role deleted',
+    ROLES_SORTING_CHANGED: 'roles sorting changed'
 } as const;

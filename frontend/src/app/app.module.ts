@@ -21,6 +21,7 @@ import {MillisecondsToSecondsPipe} from './views/session/shared/milliseconds-to-
 import {ConnectionLostDialogComponent} from './views/session/connection-lost-dialog/connection-lost-dialog.component';
 import {DialogModule} from '@angular/cdk/dialog';
 import { TimerStartStopButtonPipe } from './views/session/shared/timer-start-stop-button.pipe';
+import { RoleListComponent } from './views/session/role-list/role-list.component';
 
 @NgModule({
     declarations: [
@@ -39,6 +40,7 @@ import { TimerStartStopButtonPipe } from './views/session/shared/timer-start-sto
         MillisecondsToSecondsPipe,
         ConnectionLostDialogComponent,
         TimerStartStopButtonPipe,
+        RoleListComponent,
     ],
     imports: [
         BrowserModule,

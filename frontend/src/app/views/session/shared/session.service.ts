@@ -22,6 +22,7 @@ export class SessionService {
     participantsSubject: Subject<string[]> = new Subject<string[]>();
     participants$: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([]);
     goals$: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([]);
+    roles$: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([]);
     countdownRunning: boolean = false;
     timeLeft: number = 900000;
     countdownDesiredTime: number = 900000;
@@ -71,6 +72,7 @@ export class SessionService {
             this.sessionSettings.participants = message.participants;
             this.sessionSettings.goals = message.goals;
 
+            this.roles$.next(message.roles);
             this.participants$.next(message.participants);
             this.goals$.next(message.goals);
 
@@ -85,6 +87,10 @@ export class SessionService {
             if (this.countdownRunning) {
                 this.startCountdown();
             }
+        });
+
+        this.socket.on('roles changed', (roles) => {
+            this.roles$.next(roles);
         });
 
         this.socket.on('participants updated', (participants) => {
@@ -145,6 +151,28 @@ export class SessionService {
     private stopCountdown() {
         this.timerSubscription?.unsubscribe();
         this.timerObservable = null;
+    }
+
+    rolesSortingChanged(indices: { previousIndex: number; newIndex: number }) {
+        this.socket?.emit('roles sorting changed', {
+            sessionId: this.sessionId,
+            indices: indices
+        });
+    }
+
+    newRoleSubmitted(newRole: string) {
+        this.socket?.emit('new role submitted', {
+            sessionId: this.sessionId,
+            newRole: newRole
+        });
+    }
+
+
+    roleDeleted(roleToDelete: string) {
+        this.socket?.emit('role deleted', {
+            sessionId: this.sessionId,
+            roleToDelete: roleToDelete
+        });
     }
 
     newParticipantSubmitted(newParticipant: string) {

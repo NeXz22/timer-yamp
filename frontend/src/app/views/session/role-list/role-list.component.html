@@ -1,0 +1,13 @@
+<h4>Roles</h4>
+
+<form (ngSubmit)="onNewRoleSubmit()">
+    <input type="text" id="new-participant-input" placeholder="new role" autocomplete="off" #newRoleInput>
+    <button type="submit" id="new-participant-button">+ Add role</button>
+</form>
+
+<yamp-drag-drop-list [items$]="sessionService.roles$" (dropEventEmitter)="onRoleDrop($event)">
+    <ng-template yampTemplate="item" let-role>
+        <span>{{role}}</span>
+        <span><button (click)="onDeleteRoleClicked(role)">delete</button></span>
+    </ng-template>
+</yamp-drag-drop-list>

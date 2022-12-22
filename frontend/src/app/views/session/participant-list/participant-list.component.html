@@ -6,7 +6,8 @@
 </form>
 
 <yamp-drag-drop-list [items$]="sessionService.participants$" (dropEventEmitter)="onParticipantDrop($event)">
-    <ng-template yampTemplate="item" let-participant>
+    <ng-template yampTemplate="item" let-participant let-index="index">
+        <div class="role" *ngIf="index < (sessionService.roles$ | async)!.length">{{(sessionService.roles$ | async)![index]}}</div>
         <span>{{participant}}</span>
         <span><button (click)="onDeleteParticipantClicked(participant)">delete</button></span>
     </ng-template>

@@ -1,13 +1,14 @@
 import {Server, Socket} from 'socket.io';
 import {Server as HttpSever} from 'http';
 import {EVENT} from './event.enum';
-import {DEFAULT_SESSION_SETTINGS} from './default-session-settings';
 import {SessionSettingsModel} from './session-settings.model';
 import {NewGoalSubmit} from './model/new-goal-submit.model';
 import {DeleteGoalSubmit} from './model/delete-goal-submit.model';
 import {ArraySortingSubmit} from './model/array-sorting-submit.model';
 import {NewParticipantSubmit} from './model/new-participant-submit.model';
 import {DeleteParticipantSubmit} from './model/delete-participant-submit.model';
+import {NewRoleSubmit} from './model/new-role-submit.model';
+import {DeleteRoleSubmit} from './model/delete-role-submit.model';
 
 class SocketIoServer extends Server {
 
@@ -37,7 +38,10 @@ class SocketIoServer extends Server {
             socket.on(EVENT.DISCONNECT, this.onDisconnect(socket));
             socket.on(EVENT.SESSION_JOINED, this.onSessionJoined(socket));
             socket.on(EVENT.PARTICIPANT_SORTING_CHANGED, this.onParticipantsSortingChanged());
+            socket.on(EVENT.ROLES_SORTING_CHANGED, this.onRolesSortingChanged());
             socket.on(EVENT.NEW_PARTICIPANT_SUBMITTED, this.onNewParticipantSubmitted());
+            socket.on(EVENT.NEW_ROLE_SUBMITTED, this.onNewRoleSubmitted());
+            socket.on(EVENT.ROLE_DELETED, this.onRoleDeleted());
             socket.on(EVENT.PARTICIPANT_DELETED, this.onParticipantDeleted());
             socket.on(EVENT.GOALS_SORTING_CHANGED, this.onGoalsSortingChanged());
             socket.on(EVENT.NEW_GOAL_SUBMITTED, this.onNewGoalSubmitted());
@@ -79,18 +83,52 @@ class SocketIoServer extends Server {
                     if (SocketIoServer.sessionSettings.get(sessionToJoin).countdownRunning) {
                         existingSessionSettings.countdownLeft -= Date.now() - existingSessionSettings.timeCountdownStarted;
                     }
-                    socket.emit(EVENT.SETTINGS_FOR_REQUESTED_SESSION_ALREADY_EXIST, existingSessionSettings)
+                    socket.emit(EVENT.SETTINGS_FOR_REQUESTED_SESSION_ALREADY_EXIST, existingSessionSettings);
                 }
             } else {
-                SocketIoServer.sessionSettings.set(sessionToJoin, {...DEFAULT_SESSION_SETTINGS} as SessionSettingsModel);
+                const defaultSettings = {
+                    participants: [],
+                    goals: [],
+                    roles: ['driver', 'navigator'],
+                    countdownRunning: false,
+                    countdownLeft: 900000,
+                    timeCountdownStarted: 0,
+                    desiredSeconds: 0,
+                    desiredMinutes: 900000,
+                };
+                SocketIoServer.sessionSettings.set(sessionToJoin, defaultSettings);
+                socket.emit(EVENT.SETTINGS_FOR_REQUESTED_SESSION_ALREADY_EXIST, defaultSettings);
             }
+        }
+    }
+
+    private onNewRoleSubmitted() {
+        return function (settingsUpdate: NewRoleSubmit) {
+            const sessionRoles = SocketIoServer.sessionSettings.get(settingsUpdate.sessionId).roles;
+            sessionRoles.push(settingsUpdate.newRole);
+            SocketIoServer.io.in(settingsUpdate.sessionId).emit(EVENT.ROLES_CHANGED, sessionRoles);
+        }
+    }
+
+    private onRoleDeleted() {
+        return function (settingsUpdate: DeleteRoleSubmit) {
+            const sessionRoles = SocketIoServer.sessionSettings.get(settingsUpdate.sessionId).roles;
+            const updatedRoles = sessionRoles.filter(role => role !== settingsUpdate.roleToDelete);
+            SocketIoServer.sessionSettings.get(settingsUpdate.sessionId).roles = updatedRoles;
+            SocketIoServer.io.in(settingsUpdate.sessionId).emit(EVENT.ROLES_CHANGED, updatedRoles);
+        }
+    }
+
+    private onRolesSortingChanged() {
+        return function (settingsUpdate: ArraySortingSubmit) {
+            SocketIoServer.moveElementInArray(SocketIoServer.sessionSettings.get(settingsUpdate.sessionId).roles, settingsUpdate.indices.previousIndex, settingsUpdate.indices.newIndex);
+            SocketIoServer.io.in(settingsUpdate.sessionId).emit(EVENT.ROLES_CHANGED, SocketIoServer.sessionSettings.get(settingsUpdate.sessionId).roles);
         }
     }
 
     private onParticipantsSortingChanged() {
         return function (settingsUpdate: ArraySortingSubmit) {
             SocketIoServer.moveElementInArray(SocketIoServer.sessionSettings.get(settingsUpdate.sessionId).participants, settingsUpdate.indices.previousIndex, settingsUpdate.indices.newIndex);
-
             SocketIoServer.io.in(settingsUpdate.sessionId).emit(EVENT.PARTICIPANTS_UPDATED, SocketIoServer.sessionSettings.get(settingsUpdate.sessionId).participants);
         }
     }
@@ -115,7 +153,6 @@ class SocketIoServer extends Server {
     private onGoalsSortingChanged() {
         return function (settingsUpdate: ArraySortingSubmit) {
             SocketIoServer.moveElementInArray(SocketIoServer.sessionSettings.get(settingsUpdate.sessionId).goals, settingsUpdate.indices.previousIndex, settingsUpdate.indices.newIndex);
-
             SocketIoServer.io.in(settingsUpdate.sessionId).emit(EVENT.GOALS_UPDATED, SocketIoServer.sessionSettings.get(settingsUpdate.sessionId).goals);
         }
     }

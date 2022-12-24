@@ -12,7 +12,6 @@ export class SessionComponent implements OnInit {
 
     sessionId: string = '';
     currentUrl: string = '';
-    connectionStatus: boolean = false;
 
     sounds: { name: string, src: string }[] = [
         {name: 'announcement', src: 'announcement-sound-4-21464.mp3'},

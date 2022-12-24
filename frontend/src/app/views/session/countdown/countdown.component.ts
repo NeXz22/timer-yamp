@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component} from '@angular/core';
 import {SessionService} from '../shared/session.service';
 
 @Component({
@@ -6,14 +6,11 @@ import {SessionService} from '../shared/session.service';
     templateUrl: './countdown.component.html',
     styleUrls: ['./countdown.component.scss']
 })
-export class CountdownComponent implements OnInit {
+export class CountdownComponent {
 
     constructor(
         public sessionService: SessionService,
     ) {
-    }
-
-    ngOnInit(): void {
     }
 
     onStartStopClicked(): void {

@@ -1,4 +1,4 @@
-import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {Component, ElementRef, ViewChild} from '@angular/core';
 import {SessionService} from '../shared/session.service';
 
 @Component({
@@ -6,23 +6,13 @@ import {SessionService} from '../shared/session.service';
     templateUrl: './goal-list.component.html',
     styleUrls: ['./goal-list.component.scss']
 })
-export class GoalListComponent implements OnInit {
+export class GoalListComponent {
 
     @ViewChild('newGoalInput', {static: true}) newGoalInputRef!: ElementRef<HTMLInputElement>;
-
-    goals: string[] = [];
 
     constructor(
         public sessionService: SessionService,
     ) {
-    }
-
-    ngOnInit(): void {
-        this.sessionService.goals$.subscribe({
-            next: newGoals => {
-                this.goals = newGoals;
-            },
-        })
     }
 
     onNewGoalSubmit(): void {

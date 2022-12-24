@@ -1,4 +1,4 @@
-import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {Component, ElementRef, ViewChild} from '@angular/core';
 import {SessionService} from '../shared/session.service';
 
 @Component({
@@ -6,23 +6,13 @@ import {SessionService} from '../shared/session.service';
     templateUrl: './participant-list.component.html',
     styleUrls: ['./participant-list.component.scss']
 })
-export class ParticipantListComponent implements OnInit {
+export class ParticipantListComponent {
 
     @ViewChild('newParticipantInput', {static: true}) newParticipantInputRef!: ElementRef<HTMLInputElement>;
-
-    participants: string[] = [];
 
     constructor(
         public sessionService: SessionService,
     ) {
-    }
-
-    ngOnInit(): void {
-        this.sessionService.participantsSubject.subscribe({
-            next: newParticipants => {
-                this.participants = newParticipants;
-            },
-        })
     }
 
     onNewParticipantSubmit(): void {

@@ -1,15 +1,13 @@
-import { Component, OnInit } from '@angular/core';
+import {Component} from '@angular/core';
 
 @Component({
-  selector: 'yamp-connection-lost-dialog',
-  templateUrl: './connection-lost-dialog.component.html',
-  styleUrls: ['./connection-lost-dialog.component.scss']
+    selector: 'yamp-connection-lost-dialog',
+    templateUrl: './connection-lost-dialog.component.html',
+    styleUrls: ['./connection-lost-dialog.component.scss']
 })
-export class ConnectionLostDialogComponent implements OnInit {
+export class ConnectionLostDialogComponent {
 
-  constructor() { }
-
-  ngOnInit(): void {
-  }
+    constructor() {
+    }
 
 }

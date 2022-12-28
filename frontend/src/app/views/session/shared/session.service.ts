@@ -2,9 +2,8 @@ import {Injectable} from '@angular/core';
 import {BehaviorSubject, Observable, Subject, Subscription, timer} from 'rxjs';
 import {io, Socket} from 'socket.io-client';
 import {LocalSession} from './localSession';
-import {ConnectionLostDialogComponent} from '../connection-lost-dialog/connection-lost-dialog.component';
-import {Dialog, DialogRef} from '@angular/cdk/dialog';
 import {Goal} from './goal.model';
+import {NotificationService} from './notification.service';
 
 @Injectable({
     providedIn: 'root'
@@ -34,10 +33,8 @@ export class SessionService {
     desiredSeconds: number = 0;
     desiredMinutes: number = 900000;
 
-    private dialogRef: DialogRef<unknown, ConnectionLostDialogComponent> | null = null;
-
     constructor(
-        public dialog: Dialog,
+        private notificationService: NotificationService,
     ) {
     }
 
@@ -49,16 +46,13 @@ export class SessionService {
         this.socket.on('connect', () => {
             SessionService.debugLog(`Connected to Server. User-ID: [${this.socket?.id}]`);
             this.connectionStatus = true;
-            this.dialogRef?.close();
-            this.dialogRef = null;
-
             this.socket?.emit('join session', this.sessionId);
         });
 
         this.socket.on('disconnect', (reason) => {
+            this.notificationService.addErrorNotification('You have lost connection to the server! \n Please refresh the site to avoid any further problems.')
             SessionService.debugLog(`Disconnected from Server. Reason: ${reason}`);
             this.connectionStatus = false;
-            this.dialogRef = this.dialog.open(ConnectionLostDialogComponent, {});
         });
 
         this.socket.on('to all clients', (message) => {
@@ -112,7 +106,9 @@ export class SessionService {
 
             if (this.countdownRunning) {
                 this.startCountdown();
+                this.notificationService.addSuccessNotification('Timer started!');
             } else {
+                this.notificationService.addWarnNotification('Timer stop/reset!');
                 this.stopCountdown();
             }
         });
@@ -139,6 +135,10 @@ export class SessionService {
                     this.countdownRunning = false;
                     this.updateDesiredTime();
                     this.countdownEnded();
+                    const nextDriver = this.participants$.getValue()[1];
+                    if (nextDriver) {
+                        this.notificationService.addSuccessNotification('Time ran out. ' + nextDriver + ' is next!');
+                    }
                     // TODO play sound
                 } else {
                     if (this.timeAtLastTimerCall) {

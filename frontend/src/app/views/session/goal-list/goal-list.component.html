@@ -6,8 +6,12 @@
 </form>
 
 <yamp-drag-drop-list [items$]="sessionService.goals$" (dropEventEmitter)="onGoalDrop($event)">
-    <ng-template yampTemplate="item" let-goal>
-        <span>{{goal}}</span>
-        <span><button (click)="onDeleteGoalClicked(goal)">delete</button></span>
+    <ng-template yampTemplate="item" let-goal let-index="index">
+        <div class="goals-list-item">
+            <span class="completed-badge" *ngIf="(sessionService.goals$ | async)![index].completed">completed</span>
+            <span class="goal-name">{{goal.name}}</span>
+            <button (click)="onCompleteGoalClicked(goal)">complete</button>
+            <button (click)="onDeleteGoalClicked(goal)">delete</button>
+        </div>
     </ng-template>
 </yamp-drag-drop-list>

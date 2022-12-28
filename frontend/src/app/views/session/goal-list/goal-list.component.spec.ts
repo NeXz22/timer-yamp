@@ -6,6 +6,7 @@ import {Component, Input} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {SessionService} from '../shared/session.service';
 import {BehaviorSubject} from 'rxjs';
+import {Goal} from '../shared/goal.model';
 
 @Component({selector: 'yamp-drag-drop-list', template: ''})
 class DragDropListStubComponent {
@@ -39,7 +40,7 @@ describe('GoalListComponent', () => {
         fixture = TestBed.createComponent(GoalListComponent);
         component = fixture.componentInstance;
         sessionServiceSpy = TestBed.inject(SessionService) as jasmine.SpyObj<SessionService>;
-        sessionServiceSpy.goals$ = new BehaviorSubject<string[]>([]);
+        sessionServiceSpy.goals$ = new BehaviorSubject<Goal[]>([]);
         newGoalInput = fixture.debugElement.query(By.css('#new-goal-input')).nativeElement;
         newGoalButton = fixture.debugElement.query(By.css('#new-goal-button')).nativeElement;
         fixture.detectChanges();

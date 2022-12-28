@@ -1,6 +1,6 @@
 export interface SessionSettingsModel {
     participants: any[];
-    goals: any[];
+    goals: {name: string, completed: boolean}[];
     roles: string[];
     countdownRunning: boolean;
     countdownLeft: number;

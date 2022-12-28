@@ -4,6 +4,7 @@ import {io, Socket} from 'socket.io-client';
 import {LocalSession} from './localSession';
 import {ConnectionLostDialogComponent} from '../connection-lost-dialog/connection-lost-dialog.component';
 import {Dialog, DialogRef} from '@angular/cdk/dialog';
+import {Goal} from './goal.model';
 
 @Injectable({
     providedIn: 'root'
@@ -21,7 +22,7 @@ export class SessionService {
     connectionStatus: boolean = false;
     participantsSubject: Subject<string[]> = new Subject<string[]>();
     participants$: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([]);
-    goals$: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([]);
+    goals$: BehaviorSubject<Goal[]> = new BehaviorSubject<Goal[]>([]);
     roles$: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([]);
     countdownRunning: boolean = false;
     timeLeft: number = 900000;
@@ -203,10 +204,17 @@ export class SessionService {
         });
     }
 
-    goalDeleted(goalToDelete: string): void {
+    goalDeleted(goalToDelete: Goal): void {
         this.socket?.emit('goal deleted', {
             sessionId: this.sessionId,
-            goalToDelete: goalToDelete
+            goalToDelete: goalToDelete.name
+        });
+    }
+
+    goalCompleted(goalCompleted: Goal) {
+        this.socket?.emit('goal completed', {
+            sessionId: this.sessionId,
+            goalToComplete: goalCompleted.name
         });
     }
 

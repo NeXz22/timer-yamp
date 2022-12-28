@@ -12,7 +12,7 @@ export class DragDropListComponent implements AfterContentInit {
 
     @ContentChild(YampTemplateDirective) templateDirective!: YampTemplateDirective;
 
-    @Input() items$!: BehaviorSubject<string[]>;
+    @Input() items$!: BehaviorSubject<any[]>;
 
     @Output() dropEventEmitter = new EventEmitter<{ previousIndex: number, newIndex: number }>();
 

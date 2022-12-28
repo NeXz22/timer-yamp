@@ -27,3 +27,32 @@ form {
         }
     }
 }
+
+.goals-list-item {
+    padding: 1rem;
+    width: 100%;
+    display: flex;
+    align-items: center;
+
+    .completed-badge {
+        position: absolute;
+        top: 0;
+        left: 0;
+        background-color: #852D91;
+        padding: 0.25rem;
+        font-size: .75rem;
+        border-radius: .25rem;
+    }
+
+    .goal-name {
+        flex: 1 1 auto;
+    }
+
+    button {
+        margin: 0 .5rem;
+
+        &:last-child {
+            margin-right: 0;
+        }
+    }
+}

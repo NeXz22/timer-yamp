@@ -9,6 +9,7 @@ import {NewParticipantSubmit} from './model/new-participant-submit.model';
 import {DeleteParticipantSubmit} from './model/delete-participant-submit.model';
 import {NewRoleSubmit} from './model/new-role-submit.model';
 import {DeleteRoleSubmit} from './model/delete-role-submit.model';
+import {GoalCompletedSubmit} from './model/goal-completed-submit.model';
 
 class SocketIoServer extends Server {
 
@@ -46,6 +47,7 @@ class SocketIoServer extends Server {
             socket.on(EVENT.GOALS_SORTING_CHANGED, this.onGoalsSortingChanged());
             socket.on(EVENT.NEW_GOAL_SUBMITTED, this.onNewGoalSubmitted());
             socket.on(EVENT.GOAL_DELETED, this.onGoalDeleted());
+            socket.on(EVENT.GOAL_COMPLETED, this.onGoalCompleted());
             socket.on(EVENT.START_STOP_COUNTDOWN, this.onStartStopCountdown());
             socket.on(EVENT.RESET_COUNTDOWN, this.onResetCountdown());
             socket.on(EVENT.COUNTDOWN_ENDED, this.onCountdownEnded());
@@ -160,7 +162,8 @@ class SocketIoServer extends Server {
     private onNewGoalSubmitted() {
         return function (settingsUpdate: NewGoalSubmit) {
             const sessionGoals = SocketIoServer.sessionSettings.get(settingsUpdate.sessionId).goals;
-            sessionGoals.push(settingsUpdate.newGoal);
+            const newGoal = {name: settingsUpdate.newGoal, completed: false};
+            sessionGoals.push(newGoal);
             SocketIoServer.io.in(settingsUpdate.sessionId).emit(EVENT.GOALS_UPDATED, sessionGoals);
         }
     }
@@ -168,9 +171,20 @@ class SocketIoServer extends Server {
     private onGoalDeleted() {
         return function (settingsUpdate: DeleteGoalSubmit) {
             const sessionGoals = SocketIoServer.sessionSettings.get(settingsUpdate.sessionId).goals;
-            const updatedGoals = sessionGoals.filter(goal => goal !== settingsUpdate.goalToDelete);
+            const updatedGoals = sessionGoals.filter(goal => goal.name !== settingsUpdate.goalToDelete);
             SocketIoServer.sessionSettings.get(settingsUpdate.sessionId).goals = updatedGoals;
             SocketIoServer.io.in(settingsUpdate.sessionId).emit(EVENT.GOALS_UPDATED, updatedGoals);
+        }
+    }
+
+    private onGoalCompleted() {
+        return function (settingsUpdate: GoalCompletedSubmit) {
+            const sessionGoals = SocketIoServer.sessionSettings.get(settingsUpdate.sessionId).goals;
+            const completedGoal = sessionGoals.find(goal => goal.name === settingsUpdate.goalToComplete);
+            if (completedGoal) {
+                completedGoal.completed = !completedGoal.completed;
+                SocketIoServer.io.in(settingsUpdate.sessionId).emit(EVENT.GOALS_UPDATED, sessionGoals);
+            }
         }
     }
 
@@ -233,8 +247,8 @@ class SocketIoServer extends Server {
         return [...joinedSessions];
     }
 
-    private static moveElementInArray(arr: string[], old_index: number, new_index: number): void {
-        arr.splice(new_index, 0, arr.splice(old_index, 1)[0]);
+    private static moveElementInArray(array: {name: string, completed: boolean}[] | any[], old_index: number, new_index: number): void {
+        array.splice(new_index, 0, array.splice(old_index, 1)[0]);
     };
 }
 

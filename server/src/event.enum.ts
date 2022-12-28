@@ -10,6 +10,7 @@ export const EVENT = {
     GOALS_SORTING_CHANGED: 'goals sorting changed',
     NEW_GOAL_SUBMITTED: 'new goal submitted',
     GOAL_DELETED: 'goal deleted',
+    GOAL_COMPLETED: 'goal completed',
     START_STOP_COUNTDOWN: 'start stop countdown',
     RESET_COUNTDOWN: 'reset countdown',
     COUNTDOWN_ENDED: 'countdown ended',
@@ -26,5 +27,5 @@ export const EVENT = {
     NEW_ROLE_SUBMITTED: 'new role submitted',
     ROLES_CHANGED: 'roles changed',
     ROLE_DELETED: 'role deleted',
-    ROLES_SORTING_CHANGED: 'roles sorting changed'
+    ROLES_SORTING_CHANGED: 'roles sorting changed',
 } as const;

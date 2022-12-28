@@ -1,5 +1,6 @@
 import {Component, ElementRef, ViewChild} from '@angular/core';
 import {SessionService} from '../shared/session.service';
+import {Goal} from '../shared/goal.model';
 
 @Component({
     selector: 'yamp-goal-list',
@@ -27,7 +28,11 @@ export class GoalListComponent {
         this.sessionService.goalsSortingChanged(indices);
     }
 
-    onDeleteGoalClicked(goalToDelete: string): void {
+    onDeleteGoalClicked(goalToDelete: Goal): void {
         this.sessionService.goalDeleted(goalToDelete);
+    }
+
+    onCompleteGoalClicked(goal: Goal): void {
+        this.sessionService.goalCompleted(goal);
     }
 }

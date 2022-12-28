@@ -1,5 +1,23 @@
+<p>
+    Welcome to your new favourite time-tracking mob-programming tool: YAMP!
+</p>
+
+<p>
+    The goal of mob programming is to improve collaboration, knowledge sharing, and productivity within a team.
+    It allows team members to learn from each other and share their expertise, and it allows the team to move quickly
+    and make progress on tasks.
+    It also helps to ensure that all team members are on the same page and working towards the same goals.
+</p>
+
+<p>
+    YAMP is designed to support the mob programming process, making it easy for teams to track the time, goals and
+    participants of a mob-programming session.
+    With an intuitive interface and no required login- or registration process, you can share your individual
+    mob-programming-session with all your teammates.
+</p>
+
 <form (ngSubmit)="onSubmit()">
-    <label for="session-name">Enter session name</label>
+    <label for="session-name">Start now and enter a session name</label>
     <input placeholder="session name" id="session-name" [(ngModel)]="sessionName" [ngModelOptions]="{standalone: true}">
     <button (submit)="onSubmit()" type="submit">Submit</button>
 </form>

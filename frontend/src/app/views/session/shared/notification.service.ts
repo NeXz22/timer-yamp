@@ -61,6 +61,7 @@ export class NotificationService implements OnDestroy {
             this.timerSubscriptions = this.timerSubscriptions.filter((timer) => timer !== timerSubscription);
         });
         this.timerSubscriptions.push(timerSubscription);
+        newNotification.started = Date.now();
     }
 
     ngOnDestroy() {

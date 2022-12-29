@@ -6,5 +6,6 @@
             }">
         <span class="notification-text">{{notification.text}}</span>
         <button (click)="onRemoveNotificationClicked(notification)">X</button>
+        <span *ngIf="notification.severity !== 'error'" class="progress"></span>
     </div>
 </div>

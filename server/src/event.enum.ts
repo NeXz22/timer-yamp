@@ -22,6 +22,7 @@ export const EVENT = {
     PARTICIPANTS_UPDATED: 'participants updated',
     GOALS_UPDATED: 'goals updated',
     COUNTDOWN_UPDATE: 'countdown update',
+    COUNTDOWN_RESET: 'countdown reset',
     SECONDS_CHANGED: 'seconds changed',
     MINUTES_CHANGED: 'minutes changed',
     NEW_ROLE_SUBMITTED: 'new role submitted',

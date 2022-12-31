@@ -10,6 +10,8 @@ import {DeleteParticipantSubmit} from './model/delete-participant-submit.model';
 import {NewRoleSubmit} from './model/new-role-submit.model';
 import {DeleteRoleSubmit} from './model/delete-role-submit.model';
 import {GoalCompletedSubmit} from './model/goal-completed-submit.model';
+import {Observable, timer} from 'rxjs';
+import * as _ from 'lodash';
 
 class SocketIoServer extends Server {
 
@@ -50,7 +52,6 @@ class SocketIoServer extends Server {
             socket.on(EVENT.GOAL_COMPLETED, this.onGoalCompleted());
             socket.on(EVENT.START_STOP_COUNTDOWN, this.onStartStopCountdown());
             socket.on(EVENT.RESET_COUNTDOWN, this.onResetCountdown());
-            socket.on(EVENT.COUNTDOWN_ENDED, this.onCountdownEnded());
             socket.on(EVENT.TIME_SECONDS_SETTINGS_CHANGED, this.onTimeSecondsSettingsChanged());
             socket.on(EVENT.TIME_MINUTES_SETTINGS_CHANGED, this.onTimeMinutesSettingsChanged());
         });
@@ -81,7 +82,8 @@ class SocketIoServer extends Server {
 
             if (SocketIoServer.sessionSettings.has(sessionToJoin)) {
                 if (SocketIoServer.sessionSettings.get(sessionToJoin)) {
-                    const existingSessionSettings = {...SocketIoServer.sessionSettings.get(sessionToJoin)};
+                    let existingSessionSettings = {...SocketIoServer.sessionSettings.get(sessionToJoin)};
+                    existingSessionSettings = _.omit(existingSessionSettings, ['timerSubscription', 'timerObservable']);
                     if (SocketIoServer.sessionSettings.get(sessionToJoin).countdownRunning) {
                         existingSessionSettings.countdownLeft -= Date.now() - existingSessionSettings.timeCountdownStarted;
                     }
@@ -189,50 +191,84 @@ class SocketIoServer extends Server {
     }
 
     private onStartStopCountdown() {
-        return function (s) {
-            SocketIoServer.sessionSettings.get(s.sessionId).countdownRunning = !SocketIoServer.sessionSettings.get(s.sessionId).countdownRunning;
-            SocketIoServer.sessionSettings.get(s.sessionId).countdownLeft = s.timeLeft;
-            if (SocketIoServer.sessionSettings.get(s.sessionId).countdownRunning) {
-                SocketIoServer.sessionSettings.get(s.sessionId).timeCountdownStarted = Date.now();
+        return function (settingsUpdate) {
+            const sessionSettings = SocketIoServer.sessionSettings.get(settingsUpdate.sessionId);
+
+            sessionSettings.countdownRunning = !sessionSettings.countdownRunning;
+            sessionSettings.countdownLeft = settingsUpdate.timeLeft;
+            if (sessionSettings.countdownRunning) {
+                sessionSettings.timeCountdownStarted = Date.now();
             }
-            SocketIoServer.io.in(s.sessionId).emit(EVENT.COUNTDOWN_UPDATE, {
-                countdownRunning: SocketIoServer.sessionSettings.get(s.sessionId).countdownRunning,
-                countdownLeft: SocketIoServer.sessionSettings.get(s.sessionId).countdownLeft
+
+            SocketIoServer.io.in(settingsUpdate.sessionId).emit(EVENT.COUNTDOWN_UPDATE, {
+                countdownRunning: sessionSettings.countdownRunning,
+                countdownLeft: sessionSettings.countdownLeft
             });
+
+
+            if (sessionSettings.countdownRunning) {
+                console.log('timer started!');
+                const timerObservable = SocketIoServer.createTimer(sessionSettings.countdownLeft);
+                sessionSettings.timerObservable = timerObservable;
+
+                sessionSettings.timerSubscription = timerObservable.subscribe({
+                    next: () => {
+                        console.log('timer ended!');
+                        SocketIoServer.moveElementInArray(sessionSettings.participants, 0, sessionSettings.participants.length - 1);
+                        SocketIoServer.sessionSettings.get(settingsUpdate.sessionId).countdownRunning = false;
+                        SocketIoServer.sessionSettings.get(settingsUpdate.sessionId).countdownLeft = sessionSettings.desiredSeconds + sessionSettings.desiredMinutes;
+                        SocketIoServer.io.in(settingsUpdate.sessionId).emit(EVENT.COUNTDOWN_ENDED, {
+                            countdownRunning: sessionSettings.countdownRunning,
+                            participants: sessionSettings.participants
+                        });
+                    }, complete: () => {
+                        console.log('timerObservable completed!')
+                    }
+                })
+            } else {
+                sessionSettings.timerSubscription.unsubscribe();
+                sessionSettings.timerSubscription = null;
+                sessionSettings.timerObservable = null;
+                console.log('timerSubscription unsubscribed!');
+            }
         }
     }
 
     private onResetCountdown() {
-        return function (s) {
-            SocketIoServer.sessionSettings.get(s.sessionId).countdownLeft = s.timeLeft;
-            SocketIoServer.io.in(s.sessionId).emit(EVENT.COUNTDOWN_UPDATE, {
-                countdownRunning: SocketIoServer.sessionSettings.get(s.sessionId).countdownRunning,
-                countdownLeft: SocketIoServer.sessionSettings.get(s.sessionId).countdownLeft
-            });
-        }
-    }
+        return function (settingsUpdate) {
+            const sessionSettings = SocketIoServer.sessionSettings.get(settingsUpdate.sessionId);
+            const newCountdownLeft = sessionSettings.desiredSeconds + sessionSettings.desiredMinutes;
 
-    private onCountdownEnded() {
-        return function (s) {
-            SocketIoServer.sessionSettings.get(s.sessionId).countdownRunning = false;
-            SocketIoServer.sessionSettings.get(s.sessionId).countdownLeft = s.timeLeft;
+            if (SocketIoServer.sessionSettings.get(settingsUpdate.sessionId).countdownLeft !== newCountdownLeft) {
+                SocketIoServer.sessionSettings.get(settingsUpdate.sessionId).countdownLeft = newCountdownLeft;
+                SocketIoServer.io.in(settingsUpdate.sessionId).emit(EVENT.COUNTDOWN_RESET, {
+                    countdownRunning: SocketIoServer.sessionSettings.get(settingsUpdate.sessionId).countdownRunning,
+                    countdownLeft: SocketIoServer.sessionSettings.get(settingsUpdate.sessionId).countdownLeft
+                });
+            }
         }
     }
 
     private onTimeSecondsSettingsChanged() {
-        return function (s) {
-            SocketIoServer.sessionSettings.get(s.sessionId).desiredSeconds = s.desiredSeconds;
-            SocketIoServer.io.in(s.sessionId).emit(EVENT.SECONDS_CHANGED, {
-                desiredSeconds: s.desiredSeconds
+        return function (settingsUpdate) {
+            const sessionSettings = SocketIoServer.sessionSettings.get(settingsUpdate.sessionId);
+            sessionSettings.desiredSeconds = settingsUpdate.desiredSeconds;
+            sessionSettings.countdownLeft = sessionSettings.desiredSeconds + sessionSettings.desiredMinutes;
+
+            SocketIoServer.io.in(settingsUpdate.sessionId).emit(EVENT.SECONDS_CHANGED, {
+                desiredSeconds: settingsUpdate.desiredSeconds
             });
         }
     }
 
     private onTimeMinutesSettingsChanged() {
-        return function (s) {
-            SocketIoServer.sessionSettings.get(s.sessionId).desiredMinutes = s.desiredMinutes;
-            SocketIoServer.io.in(s.sessionId).emit(EVENT.MINUTES_CHANGED, {
-                desiredMinutes: s.desiredMinutes
+        return function (settingsUpdate) {
+            const sessionSettings = SocketIoServer.sessionSettings.get(settingsUpdate.sessionId);
+            sessionSettings.desiredMinutes = settingsUpdate.desiredMinutes;
+            sessionSettings.countdownLeft = sessionSettings.desiredSeconds + sessionSettings.desiredMinutes;
+
+            SocketIoServer.io.in(settingsUpdate.sessionId).emit(EVENT.MINUTES_CHANGED, {
+                desiredMinutes: settingsUpdate.desiredMinutes
             });
         }
     }
@@ -247,9 +283,15 @@ class SocketIoServer extends Server {
         return [...joinedSessions];
     }
 
-    private static moveElementInArray(array: {name: string, completed: boolean}[] | any[], old_index: number, new_index: number): void {
-        array.splice(new_index, 0, array.splice(old_index, 1)[0]);
+    private static moveElementInArray(array: { name: string, completed: boolean }[] | any[], old_index: number, new_index: number): void {
+        if (array.length >= old_index && array.length && new_index) {
+            array.splice(new_index, 0, array.splice(old_index, 1)[0]);
+        }
     };
+
+    private static createTimer(duration: number): Observable<number> {
+        return timer(duration);
+    }
 }
 
 export default SocketIoServer;

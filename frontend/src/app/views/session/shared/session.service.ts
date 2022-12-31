@@ -1,7 +1,6 @@
 import {Injectable} from '@angular/core';
-import {BehaviorSubject, Observable, Subject, Subscription, timer} from 'rxjs';
+import {BehaviorSubject, Observable, Subject, Subscription, takeWhile, timer} from 'rxjs';
 import {io, Socket} from 'socket.io-client';
-import {LocalSession} from './localSession';
 import {Goal} from './goal.model';
 import {NotificationService} from './notification.service';
 
@@ -12,10 +11,6 @@ export class SessionService {
 
     private socket: Socket | undefined = undefined;
     private sessionId: string | undefined;
-    private sessionSettings: LocalSession = {
-        participants: [],
-        goals: [],
-    }
 
     watching: number = 0;
     connectionStatus: boolean = false;
@@ -26,8 +21,8 @@ export class SessionService {
     countdownRunning: boolean = false;
     timeLeft: number = 900000;
     countdownDesiredTime: number = 900000;
-    private timerObservable: Observable<number> | null = null;
-    private timerSubscription: Subscription | null = null;
+    private timerObservable$: Observable<number> | null = null;
+    private timerSubscription$: Subscription | null = null;
     private timeAtLastTimerCall: number = 0;
 
     desiredSeconds: number = 0;
@@ -64,9 +59,6 @@ export class SessionService {
         });
 
         this.socket.on('settings for requested session already exist', (message) => {
-            this.sessionSettings.participants = message.participants;
-            this.sessionSettings.goals = message.goals;
-
             this.roles$.next(message.roles);
             this.participants$.next(message.participants);
             this.goals$.next(message.goals);
@@ -89,14 +81,10 @@ export class SessionService {
         });
 
         this.socket.on('participants updated', (participants) => {
-            this.sessionSettings.participants = participants;
-
             this.participants$.next(participants);
         });
 
         this.socket.on('goals updated', (goals) => {
-            this.sessionSettings.goals = goals;
-
             this.goals$.next(goals);
         });
 
@@ -108,50 +96,70 @@ export class SessionService {
                 this.startCountdown();
                 this.notificationService.addSuccessNotification('Timer started!');
             } else {
-                this.notificationService.addWarnNotification('Timer stop/reset!');
+                this.notificationService.addWarnNotification('Timer stopped!');
                 this.stopCountdown();
             }
         });
 
-        this.socket.on('seconds changed', (goals) => {
-            this.desiredSeconds = goals.desiredSeconds;
+        this.socket.on('countdown reset', (countdownUpdate) => {
+            this.timeLeft = countdownUpdate.countdownLeft;
+            this.countdownRunning = countdownUpdate.countdownRunning;
+
+            this.notificationService.addWarnNotification('Timer reset!');
+            this.stopCountdown();
+        });
+
+
+        this.socket.on('seconds changed', (secondsUpdate) => {
+            this.desiredSeconds = secondsUpdate.desiredSeconds;
             this.updateDesiredTime();
         });
 
-        this.socket.on('minutes changed', (goals) => {
-            this.desiredMinutes = goals.desiredMinutes;
+        this.socket.on('minutes changed', (minutesUpdate) => {
+            this.desiredMinutes = minutesUpdate.desiredMinutes;
             this.updateDesiredTime();
         });
+
+        this.socket.on('countdown ended', (settings) => {
+            this.countdownRunning = settings.countdownRunning;
+            this.participants$.next(settings.participants);
+            this.timerSubscription$?.unsubscribe();
+            this.updateDesiredTime();
+            this.createUpdatedRolesNotification();
+        });
+    }
+
+    private createUpdatedRolesNotification() {
+        let message = '';
+        const _participants = this.participants$.getValue();
+        const _roles = this.roles$.getValue();
+        for (let i = 0; i < _roles.length; i++) {
+            if (i < _participants.length) {
+                const role = _roles[i];
+                const participant = _participants[i];
+                message += '\n' + participant + ' is the new ' + role + '.';
+            }
+        }
+        this.notificationService.addSuccessNotification('Time ran out.' + message);
     }
 
     private startCountdown() {
         this.timeAtLastTimerCall = Date.now();
-        this.timerObservable = timer(100, 200);
-        this.timerSubscription = this.timerObservable
+        this.timerObservable$ = timer(100, 200);
+        this.timerSubscription$ = this.timerObservable$
+            .pipe(takeWhile(() => this.timeLeft > 0))
             .subscribe(() => {
-                if (this.timeLeft <= 0) {
-                    this.timeLeft = 0;
-                    this.stopCountdown();
-                    this.countdownRunning = false;
-                    this.updateDesiredTime();
-                    this.countdownEnded();
-                    const nextDriver = this.participants$.getValue()[1];
-                    if (nextDriver) {
-                        this.notificationService.addSuccessNotification('Time ran out. ' + nextDriver + ' is next!');
-                    }
-                    // TODO play sound
-                } else {
-                    if (this.timeAtLastTimerCall) {
-                        this.timeLeft -= Date.now() - this.timeAtLastTimerCall;
-                    }
-                    this.timeAtLastTimerCall = Date.now();
+                if (this.timeAtLastTimerCall) {
+                    this.timeLeft -= Date.now() - this.timeAtLastTimerCall;
                 }
+                this.timeAtLastTimerCall = Date.now();
             });
     }
 
     private stopCountdown() {
-        this.timerSubscription?.unsubscribe();
-        this.timerObservable = null;
+        this.timerSubscription$?.unsubscribe();
+        this.timerSubscription$ = null;
+        this.timerObservable$ = null;
     }
 
     rolesSortingChanged(indices: { previousIndex: number; newIndex: number }) {
@@ -235,7 +243,6 @@ export class SessionService {
     resetCountdown(): void {
         this.socket?.emit('reset countdown', {
             sessionId: this.sessionId,
-            timeLeft: this.countdownDesiredTime,
         });
     }
 
@@ -262,12 +269,5 @@ export class SessionService {
     private updateDesiredTime(): void {
         this.countdownDesiredTime = this.desiredSeconds + this.desiredMinutes;
         this.timeLeft = this.countdownDesiredTime;
-    }
-
-    private countdownEnded(): void {
-        this.socket?.emit('countdown ended', {
-            sessionId: this.sessionId,
-            timeLeft: this.countdownDesiredTime,
-        });
     }
 }

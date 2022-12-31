@@ -1,3 +1,5 @@
+import {Observable, Subscription} from 'rxjs';
+
 export interface SessionSettingsModel {
     participants: any[];
     goals: {name: string, completed: boolean}[];
@@ -7,4 +9,6 @@ export interface SessionSettingsModel {
     timeCountdownStarted: number;
     desiredSeconds: number;
     desiredMinutes: number;
+    timerObservable?: Observable<number>;
+    timerSubscription?: Subscription;
 }

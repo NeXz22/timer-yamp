@@ -1,4 +1,5 @@
 import {AfterViewInit, Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {Title} from '@angular/platform-browser';
 
 @Component({
     selector: 'app-root',
@@ -11,6 +12,11 @@ export class AppComponent implements OnInit, AfterViewInit {
 
     isDarkModePreference: boolean = false;
 
+    constructor(
+        private readonly titleService: Title,
+    ) {
+    }
+
     onThemeSwitchChange(): void {
         if (this.themeCheckboxRef.nativeElement.checked) {
             document.body.dataset['theme'] = 'dark';
@@ -20,6 +26,8 @@ export class AppComponent implements OnInit, AfterViewInit {
     }
 
     ngOnInit(): void {
+        this.titleService.setTitle('YAMP');
+
         this.isDarkModePreference = window.matchMedia('(prefers-color-scheme: dark)').matches;
 
         if (this.isDarkModePreference) {

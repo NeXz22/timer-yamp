@@ -5,7 +5,6 @@ import {By} from '@angular/platform-browser';
 import {FormsModule} from '@angular/forms';
 import {Component, Input} from '@angular/core';
 import {SessionService} from '../shared/session.service';
-import {Subject} from 'rxjs';
 
 @Component({selector: 'yamp-drag-drop-list', template: ''})
 class DragDropListStubComponent {
@@ -41,7 +40,6 @@ describe('ParticipantListComponent', () => {
         fixture = TestBed.createComponent(ParticipantListComponent);
         component = fixture.componentInstance;
         sessionServiceSpy = TestBed.inject(SessionService) as jasmine.SpyObj<SessionService>;
-        sessionServiceSpy.participantsSubject = new Subject<string[]>();
         newParticipantInput = fixture.debugElement.query(By.css('#new-participant-input')).nativeElement;
         newParticipantButton = fixture.debugElement.query(By.css('#new-participant-button')).nativeElement;
         fixture.detectChanges();

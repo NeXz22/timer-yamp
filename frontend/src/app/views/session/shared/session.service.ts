@@ -1,8 +1,9 @@
 import {Injectable} from '@angular/core';
-import {BehaviorSubject, Observable, Subject, Subscription, takeWhile, timer} from 'rxjs';
+import {BehaviorSubject, Observable, Subscription, takeWhile, timer} from 'rxjs';
 import {io, Socket} from 'socket.io-client';
 import {Goal} from './goal.model';
 import {NotificationService} from './notification.service';
+import {Title} from '@angular/platform-browser';
 
 @Injectable({
     providedIn: 'root'
@@ -13,8 +14,7 @@ export class SessionService {
     private sessionId: string | undefined;
 
     watching: number = 0;
-    connectionStatus: boolean = false;
-    participantsSubject: Subject<string[]> = new Subject<string[]>();
+    isConnectedToServer: boolean = false;
     participants$: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([]);
     goals$: BehaviorSubject<Goal[]> = new BehaviorSubject<Goal[]>([]);
     roles$: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([]);
@@ -40,7 +40,8 @@ export class SessionService {
     selectedVolume: number = 50;
 
     constructor(
-        private notificationService: NotificationService,
+        private readonly notificationService: NotificationService,
+        private readonly titleService: Title,
     ) {
     }
 
@@ -51,14 +52,16 @@ export class SessionService {
 
         this.socket.on('connect', () => {
             SessionService.debugLog(`Connected to Server. User-ID: [${this.socket?.id}]`);
-            this.connectionStatus = true;
+            this.isConnectedToServer = true;
             this.socket?.emit('join session', this.sessionId);
         });
 
         this.socket.on('disconnect', (reason) => {
             this.notificationService.addErrorNotification('You have lost connection to the server! \n Please refresh the site to avoid any further problems.')
             SessionService.debugLog(`Disconnected from Server. Reason: ${reason}`);
-            this.connectionStatus = false;
+            this.isConnectedToServer = false;
+
+            this.titleService.setTitle('YAMP');
         });
 
         this.socket.on('to all clients', (message) => {
@@ -138,6 +141,7 @@ export class SessionService {
             this.updateDesiredTime();
             this.createUpdatedRolesNotification();
             this.playSelectedSound();
+            this.titleService.setTitle('YAMP - ' + this.sessionId);
         });
     }
 
@@ -156,6 +160,7 @@ export class SessionService {
     }
 
     private startCountdown() {
+        this.titleService.setTitle(this.timeLeft + 'YAMP - ' + this.sessionId);
         this.timeAtLastTimerCall = Date.now();
         this.timerObservable$ = timer(100, 200);
         this.timerSubscription$ = this.timerObservable$
@@ -165,6 +170,7 @@ export class SessionService {
                     this.timeLeft -= Date.now() - this.timeAtLastTimerCall;
                 }
                 this.timeAtLastTimerCall = Date.now();
+                this.titleService.setTitle(this.formatTime(this.timeLeft) + ' - YAMP - ' + this.sessionId);
             });
     }
 
@@ -172,6 +178,7 @@ export class SessionService {
         this.timerSubscription$?.unsubscribe();
         this.timerSubscription$ = null;
         this.timerObservable$ = null;
+        this.titleService.setTitle('YAMP - ' + this.sessionId);
     }
 
     rolesSortingChanged(indices: { previousIndex: number; newIndex: number }) {
@@ -283,6 +290,17 @@ export class SessionService {
         this.timeLeft = this.countdownDesiredTime;
     }
 
+    private formatTime(timeInMilliseconds: number): string {
+        const timeInSeconds = timeInMilliseconds / 1000;
+        if (timeInSeconds > 0) {
+            const seconds = Math.floor(timeInSeconds % 60);
+            const minutes = Math.floor(timeInSeconds / 60) % 60;
+            return [minutes, seconds].map(v => v < 10 ? '0' + v : v).join(':');
+        } else {
+            return '00:00';
+        }
+    }
+
     playSelectedSound(): void {
         const audio = new Audio();
         audio.src = '../../../assets/sounds/' + this.selectedSound.src;
@@ -293,5 +311,13 @@ export class SessionService {
             .catch(reason => {
                 console.log(reason);
             })
+    }
+
+    destroySession(): void {
+        this.timerSubscription$?.unsubscribe();
+        this.timerSubscription$ = null;
+        this.timerObservable$ = null;
+        this.socket?.disconnect();
+        this.notificationService.notifications = [];
     }
 }

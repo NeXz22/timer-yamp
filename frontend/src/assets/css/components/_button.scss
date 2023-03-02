@@ -12,6 +12,7 @@ button {
     height: 40px;
     border: 1px solid $main-button-background-color;
     border-radius: .5rem;
+    height: 50px;
 
     &:hover {
         background-color: $main-button-background-color-hover;
@@ -25,8 +26,7 @@ button {
     }
 
     &:disabled {
-        background-color: $main-button-background-color-disabled;
-        color: $main-button-color-disabled;
+        background-color: #0f0226;
         border: 1px solid grey;
         box-shadow: none;
         cursor: initial;

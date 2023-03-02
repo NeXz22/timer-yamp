@@ -7,21 +7,39 @@
 
     .sidebar {
         flex: 0 0 350px;
-        background-color: #393939;
+        //background-image: linear-gradient(to bottom, #602785 0%, #0f0226 100%);
+        background-color: #602785;
+        background-color: #1b1b1c;
         color: #fff;
         padding: 2rem;
 
-        h1 {
-            font-weight: 600;
-            font-style: italic;
+        .logo-container {
+            max-width: 1100px;
+            position: relative;
+            z-index: 9999;
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            width: 100%;
+            padding: 1rem 0 2rem 0;
+
+            h1 {
+                font-weight: 200;
+                margin: 0;
+            }
+
+            img {
+                max-height: 2.5rem;
+                margin-right: 24px;
+            }
         }
     }
 
     .main {
         flex: 0 1 100%;
         background-color: #2d2d2d;
-        color: white;
         padding: 2rem;
+        font-size: 1rem;
 
         .info-row {
             display: flex;

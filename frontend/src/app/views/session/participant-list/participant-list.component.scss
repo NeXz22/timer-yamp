@@ -28,7 +28,7 @@ form {
 }
 
 .participants-list-item {
-    padding: 1rem;
+    padding: .5rem 1rem;
     width: 100%;
     display: flex;
     align-items: center;
@@ -37,11 +37,15 @@ form {
         flex: 1 1 auto;
     }
 
+    button {
+        background-color: #326ac1;
+    }
+
     .role-badge {
         position: absolute;
         top: 0;
         left: 0;
-        background-color: #852D91;
+        background-color: #326ac1;
         padding: 0.25rem;
         font-size: .75rem;
         border-radius: .25rem;

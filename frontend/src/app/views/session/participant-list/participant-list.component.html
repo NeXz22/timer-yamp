@@ -1,4 +1,4 @@
-<h4>Participants</h4>
+<h3>Participants</h3>
 
 <form (ngSubmit)="onNewParticipantSubmit()">
     <input type="text" id="new-participant-input" placeholder="new participant" autocomplete="off" #newParticipantInput>
@@ -10,7 +10,7 @@
         <div class="participants-list-item">
             <span class="role-badge" *ngIf="index < (sessionService.roles$ | async)!.length">{{(sessionService.roles$ | async)![index]}}</span>
             <span class="participant-name">{{participant}}</span>
-            <span><button (click)="onDeleteParticipantClicked(participant)">delete</button></span>
+            <span><button (click)="onDeleteParticipantClicked(participant)">X</button></span>
         </div>
     </ng-template>
 </yamp-drag-drop-list>

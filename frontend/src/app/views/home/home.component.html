@@ -1,23 +1,121 @@
-<p>
-    Welcome to your new favourite time-tracking mob-programming tool: YAMP!
-</p>
+<header>
+    <div class="logo-container">
+        <img src="assets/images/logo.png" alt="">
+        <h1>YAMP</h1>
+    </div>
+    <h2>Welcome to your new favourite mob-programming tool</h2>
+    <h3>Easy to use. No data tracking. 100% free.</h3>
+    <form (ngSubmit)="onSubmit()">
+        <input placeholder="enter your session name" id="session-name" [(ngModel)]="sessionName"
+               [ngModelOptions]="{standalone: true}">
+        <button (submit)="onSubmit()" type="submit">Start mobbing</button>
+    </form>
 
-<p>
-    The goal of mob programming is to improve collaboration, knowledge sharing, and productivity within a team.
-    It allows team members to learn from each other and share their expertise, and it allows the team to move quickly
-    and make progress on tasks.
-    It also helps to ensure that all team members are on the same page and working towards the same goals.
-</p>
+    <div class="waveWrapper waveAnimation">
+        <div class="waveWrapperInner bgTop">
+            <div class="wave waveTop"
+                 style="background-image: url('http://front-end-noobs.com/jecko/img/wave-top.png')"></div>
+        </div>
+        <div class="waveWrapperInner bgMiddle">
+            <div class="wave waveMiddle"
+                 style="background-image: url('http://front-end-noobs.com/jecko/img/wave-mid.png')"></div>
+        </div>
+        <div class="waveWrapperInner bgBottom">
+            <div class="wave waveBottom"
+                 style="background-image: url('http://front-end-noobs.com/jecko/img/wave-bot.png')"></div>
+        </div>
+    </div>
+</header>
 
-<p>
-    YAMP is designed to support the mob programming process, making it easy for teams to track the time, goals and
-    participants of a mob-programming session.
-    With an intuitive interface and no required login- or registration process, you can share your individual
-    mob-programming-session with all your teammates.
-</p>
+<section class="next">
+    <div class="section-container">
+        <div>
+            <img src="assets/images/visual-design.svg" alt="">
+            <h3>Keep track of your time, goals and roles</h3>
+        </div>
+        <p>
+            YAMP is designed it to help your team stay organized, on track, and accountable for your work. With YAMP,
+            you can easily keep track of time, set and track goals, and view your
+            responsibilities and tasks associated with your specific role. Whether you're working with a small team or a
+            large organization, YAMP is here to help you get things done.
+        </p>
+    </div>
+</section>
 
-<form (ngSubmit)="onSubmit()">
-    <label for="session-name">Start now and enter a session name</label>
-    <input placeholder="session name" id="session-name" [(ngModel)]="sessionName" [ngModelOptions]="{standalone: true}">
-    <button (submit)="onSubmit()" type="submit">Submit</button>
-</form>
+<section class="next alternative-bg-color">
+    <div class="section-container">
+        <div>
+            <img src="assets/images/drawing-tablet.svg" alt="">
+            <h3>Easy to use on any device</h3>
+        </div>
+        <p>
+            YAMP is designed to be fully responsive, which means it can be easily used on any
+            device. Whether you're working on a laptop, tablet, or smartphone, you'll be able to access all of the
+            features and functionality. This means that you can stay connected and get things done no matter
+            where you are, whether you're at your desk or on the go.
+        </p>
+    </div>
+</section>
+
+<section class="next">
+    <div class="section-container">
+        <div>
+            <img src="assets/images/group-layers.svg" alt="">
+            <h3>100% free. Forever.</h3>
+        </div>
+        <p>
+            YAMP is completely free to use and requires no registration or login. Simply enter a session-name
+            and start using YAMP right away. We understand that privacy is important, which is why we do
+            not track or save any user data. Any session-data (e.g. goals or participants) is automatically deleted
+            after your session is empty for 15 minutes. You can use our tool with confidence, knowing that your data is
+            safe and secure or host it on your own server (<a href="https://github.com/NeXz22/timer-yamp">Github.com</a>).
+        </p>
+    </div>
+</section>
+
+<div class="action">
+    <div class="section-container">
+        <h3>
+            What is mob-programming?
+        </h3>
+        <p>
+            Mob programming is a software development technique in which the entire team works on the same task at the
+            same time, using the same computer and screen. One team member, called the "driver," writes code while the
+            rest of the team, called the "navigators," provide guidance and assistance. The driver and navigators switch
+            roles frequently, with the goal of collective ownership and shared understanding of the code. Mob
+            programming can help teams work more efficiently and effectively by leveraging the collective knowledge and
+            skills of all team members. It can also help improve communication and collaboration within the team.
+        </p>
+        <h3>
+            What does YAMP do?
+        </h3>
+        <p>
+            YAMP tries to migrate the mob-programming technique to a remote work environment. YAMP offers
+            the possibility to track time, set and track goals, and assign roles to participants. By providing a
+            centralized platform for mob-programming, YAMP can help teams practicing mob programming and
+            work more effectively and efficiently. Whether you're just starting out with mob programming or have been
+            using this technique for some time, YAMP can be a valuable resource for your team.
+        </p>
+    </div>
+
+    <div class="waveWrapper">
+        <div class="waveWrapperInner bgTop">
+            <div class="wave waveTop"
+                 style="background-image: url('http://front-end-noobs.com/jecko/img/wave-top.png')"></div>
+        </div>
+        <div class="waveWrapperInner bgMiddle">
+            <div class="wave waveMiddle"
+                 style="background-image: url('http://front-end-noobs.com/jecko/img/wave-mid.png')"></div>
+        </div>
+        <div class="waveWrapperInner bgBottom">
+            <div class="wave waveBottom"
+                 style="background-image: url('http://front-end-noobs.com/jecko/img/wave-bot.png')"></div>
+        </div>
+    </div>
+</div>
+
+<footer>
+    <div class="section-container">
+        YAMP - 2022 - <a href="https://github.com/NeXz22/timer-yamp" target="_blank" rel="noopener noreferrer">YAMP@Github</a> - <a href="mailto:info@yamp-web.site">info@yamp-web.site</a>
+    </div>
+</footer>

@@ -3,8 +3,11 @@
 <div class="wrapper">
 
     <div class="sidebar">
-        <h1><span class="font-light">timer.</span>YAMP</h1>
-        <h3>Settings</h3>
+        <div class="logo-container">
+            <img src="assets/images/logo.png" alt="">
+            <h1>YAMP</h1>
+        </div>
+        <h3>Time-Settings</h3>
         <p>
             minutes:
             <yamp-time-input  type="minutes" [value]="sessionService.countdownDesiredTime | millisecondsToMinutes"></yamp-time-input>
@@ -14,15 +17,16 @@
             <yamp-time-input type="seconds" [value]="sessionService.countdownDesiredTime | millisecondsToSeconds"></yamp-time-input>
         </p>
         <p>
+            <yamp-role-list></yamp-role-list>
+        </p>
+        <h3>Sound-Settings</h3>
+        <p>
             <select name="sounds" id="sounds" [(ngModel)]="sessionService.selectedSound">
                 <option *ngFor="let sound of sessionService.sounds" [ngValue]="sound">{{sound.name}}</option>
             </select>
             <button type="button" (click)="sessionService.playSelectedSound()">play</button>
             <br>
             <input [(ngModel)]="sessionService.selectedVolume" type="range" min="0" max="100" class="slider" id="myRange">
-        </p>
-        <p>
-            <yamp-role-list></yamp-role-list>
         </p>
     </div>
 

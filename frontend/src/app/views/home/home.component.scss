@@ -1,0 +1,250 @@
+:host {
+    position: relative;
+    background-color: white;
+}
+
+nav {
+    background-color: white;
+    color: #1f1f3b;
+
+
+    h1 {
+        margin: 0;
+    }
+}
+
+@keyframes move_wave {
+    0% {
+        transform: translateX(0) translateZ(0) scaleY(1)
+    }
+    50% {
+        transform: translateX(-25%) translateZ(0) scaleY(0.55)
+    }
+    100% {
+        transform: translateX(-50%) translateZ(0) scaleY(1)
+    }
+}
+.waveWrapper {
+    overflow: hidden;
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    top: -1px;
+    margin: auto;
+    max-width: 100%;
+}
+.waveWrapperInner {
+    position: absolute;
+    width: 100%;
+    overflow: hidden;
+    height: 100%;
+    bottom: -1px;
+    background-image: linear-gradient(to bottom, #602785 0%, #0f0226 100%);
+}
+.bgTop {
+    z-index: 15;
+    opacity: 0.5;
+}
+.bgMiddle {
+    z-index: 10;
+    opacity: 0.75;
+}
+.bgBottom {
+    z-index: 5;
+}
+.wave {
+    position: absolute;
+    left: 0;
+    width: 200%;
+    height: 100%;
+    background-repeat: repeat no-repeat;
+    background-position: 0 bottom;
+    transform-origin: center bottom;
+}
+.waveTop {
+    background-size: 50% 100px;
+}
+.waveAnimation .waveTop {
+    animation: move-wave 3s;
+    -webkit-animation: move-wave 3s;
+    -webkit-animation-delay: 1s;
+    animation-delay: 1s;
+}
+.waveMiddle {
+    background-size: 50% 120px;
+}
+.waveAnimation .waveMiddle {
+    animation: move_wave 10s linear infinite;
+}
+.waveBottom {
+    background-size: 50% 100px;
+}
+.waveAnimation .waveBottom {
+    animation: move_wave 15s linear infinite;
+}
+.flipped {
+    transform: rotate(180deg);
+    z-index: 26;
+
+    .waveWrapperInner {
+        top: 0;
+        background: none;
+    }
+}
+
+header {
+    background-color: white;
+    background-image: linear-gradient(to bottom, #602785 0%, #0f0226 100%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    text-align: left;
+    position: relative;
+
+    .logo-container {
+        max-width: 1100px;
+        position: relative;
+        z-index: 9999;
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        width: 100%;
+        padding: 2rem 0;
+
+        h1 {
+            font-weight: 200;
+            margin: 0;
+        }
+
+        img {
+            max-height: 2.5rem;
+            margin-right: 24px;
+        }
+    }
+
+
+    h2, h3, form {
+        max-width: 1100px;
+    }
+
+    h2 {
+        width: 100%;
+        margin-top: 160px;
+        margin-bottom: 0;
+        font-weight: 600;
+        font-size: 3rem;
+        z-index: 9999;
+    }
+
+    h3 {
+        width: 100%;
+        font-size: 1.6rem;
+        font-weight: 400;
+        z-index: 9999;
+    }
+
+    form {
+        z-index: 9999;
+        width: 100%;
+        margin-bottom: 200px;
+        margin-top: 40px;
+
+        input {
+            background-color: white;
+            height: 50px;
+            border-radius: 25px 0 0 25px;
+            width: 400px;
+            color: #1f1f3b;
+            font-size: 1rem;
+            padding-left: 1rem;
+        }
+
+        button {
+            position: relative;
+            left: -30px;
+            border-radius: 25px;
+            height: 50px;
+            background-color: #6722a6;
+            border: none;
+        }
+    }
+}
+
+.next {
+    min-height: 400px;
+    background-color: white;
+    color: #1f1f3b;
+    display: flex;
+    align-items: center;
+
+    &.alternative-bg-color {
+        background-color: #f4f3fb;
+    }
+
+    .section-container {
+        max-width: 1100px;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+
+        div {
+            display: flex;
+            align-items: center;
+            flex: 0 1 40%;
+        }
+
+        img {
+            max-width: 60px;
+            margin-right: 30px;
+        }
+
+        h3 {
+            padding-right: 30px;
+        }
+
+        h3 {
+            font-size: 1.8rem;
+        }
+
+        p {
+            text-align: justify;
+            margin: 0;
+            padding: 60px;
+            font-size: 1.2rem;
+            line-height: 2rem;
+            flex: 0 1 60%;
+        }
+    }
+}
+
+.action {
+    position: relative;
+    padding: 60px 0;
+    background-color: #6722a6;
+
+    .section-container {
+        max-width: 1100px;
+        margin: 0 auto 120px auto;
+        z-index: 9999;
+        position: relative;
+
+        h3 {
+            font-size: 1.8rem;
+        }
+
+        p {
+            font-size: 1.2rem;
+            line-height: 2rem;
+        }
+    }
+}
+
+footer {
+    color: #1f1f3b;
+    padding: 3rem;
+    text-align: center;
+    font-size: 1rem;
+    line-height: 2rem;
+}

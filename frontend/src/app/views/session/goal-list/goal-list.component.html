@@ -1,4 +1,4 @@
-<h4>Goals</h4>
+<h3>Goals</h3>
 
 <form (ngSubmit)="onNewGoalSubmit()">
     <input type="text" id="new-goal-input" placeholder="new goal" autocomplete="off" #newGoalInput>
@@ -11,7 +11,7 @@
             <span class="completed-badge" *ngIf="(sessionService.goals$ | async)![index].completed">completed</span>
             <span class="goal-name">{{goal.name}}</span>
             <button (click)="onCompleteGoalClicked(goal)">complete</button>
-            <button (click)="onDeleteGoalClicked(goal)">delete</button>
+            <button (click)="onDeleteGoalClicked(goal)">X</button>
         </div>
     </ng-template>
 </yamp-drag-drop-list>
